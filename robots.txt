@@ -1,0 +1,3 @@
+# Сайт ещё не опубликован (решение владелицы). Открыть: node tools/build.mjs --public
+User-agent: *
+Disallow: /
