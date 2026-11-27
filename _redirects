@@ -1,4 +1,4 @@
-# Перенос адресов старого сайта baqytgroup.kz (сборка 2026-11-17). Формат Netlify / Cloudflare Pages.
+# Перенос адресов старого сайта baqytgroup.kz (сборка 2026-11-27). Формат Netlify / Cloudflare Pages.
 /marketplace /kvartiry/ 301
 /360 /zhk/ 301
 /about /o-kompanii/ 301
@@ -208,7 +208,7 @@
 /property/5655234 /kvartiry/5655234/ 301
 /property/5655180 /kvartiry/5655180/ 301
 /property/7235035 /kladovye/ 301
-/property/7235034 /kladovye/ 301
+/property/7235034 /kvartiry/ 301
 /property/7235032 /kladovye/ 301
 /property/7235028 /kladovye/ 301
 /property/7235013 /kladovye/ 301
@@ -230,8 +230,8 @@
 /property/7234989 /kladovye/ 301
 /property/7234990 /kladovye/ 301
 /property/7234991 /kladovye/ 301
-/property/7234992 /kladovye/ 301
-/property/7234993 /kladovye/ 301
+/property/7234992 /kvartiry/ 301
+/property/7234993 /kvartiry/ 301
 /property/7234995 /kladovye/ 301
 /property/7234996 /kladovye/ 301
 /property/7234997 /kladovye/ 301
