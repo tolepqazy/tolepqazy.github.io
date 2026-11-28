@@ -314,6 +314,12 @@ section[data-lead]{padding-top:96px}
 .zd-sec{margin-top:56px}
 .zd-sec.build{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:14px}
 .zd-sec .sec-h h2{font-size:clamp(26px,2.4vw,34px)}
+/* документы проекта: одна строка вместо пары «стройка + документы» (27.11.2026) */
+.zdoc{display:flex;align-items:center;justify-content:space-between;gap:16px 28px;flex-wrap:wrap;padding:22px 26px;border-radius:var(--r);background:var(--surface)}
+.zdoc h3{margin:0 0 4px;font:500 20px/1.2 var(--disp);letter-spacing:-.01em}
+.zdoc p{margin:0;max-width:65ch;color:var(--ink2);font-size:15px;line-height:1.45}
+.zdoc .kb{flex-shrink:0}
+@media(max-width:760px){.zdoc{padding:18px}.zdoc .kb{width:100%}}
 @container site (max-width:760px){
   .mapx{grid-template-columns:minmax(0,1fr)}
   .mapw{height:440px}
@@ -2097,3 +2103,429 @@ a.bs img{border-radius:8px}
 /* карточки ЖК: адрес тише — одна строка, серый, значок меньше (19.11.2026) */
 #pgrid .pc .addr{color:var(--mute);gap:4px;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #pgrid .pc .addr .i{width:14px;height:14px;flex:none}
+
+/* ================= правки по аудиту 27.11.2026 (docs/audit-2026-11-27.md) ================= */
+/* страница квартиры: цена и «Забронировать» всегда на экране */
+.fx-stick{position:fixed;left:0;right:0;bottom:0;z-index:39;background:rgba(255,255,255,.96);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-top:1px solid var(--line);transform:translateY(105%);transition:transform .28s ease-out}
+.fx-stick.on{transform:none}
+.fx-stick-in{max-width:1440px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:10px 24px calc(10px + env(safe-area-inset-bottom,0px))}
+.fx-stick-p{flex:1;min-width:0;display:flex;flex-direction:column}
+.fx-stick-p b{font:600 20px/1.2 var(--body);white-space:nowrap}
+.fx-stick-p span{font-size:14px;line-height:1.3;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fx-stick .kb{flex-shrink:0}
+.fx-stick .kb.pri{padding:13px 22px}
+body:has(.fx-stick.on) .fab{bottom:96px}
+body:has(.fx-stick.on) .totop{bottom:160px}
+body:has(.fx-stick.on) .cmpbar{bottom:84px}
+.fxp .fx{padding-bottom:96px}
+@container site (max-width:760px){
+  .fx-stick{transform:none}
+  .fx-stick-in{padding-inline:16px;gap:8px}
+  .fx-stick-p b{font-size:18px}
+  .fx-stick .kb.pri{padding:13px 16px}
+  .fx-stick .kb.pri .i{display:none}
+  body:has(.fx-stick) .tabbar{display:none}
+  body:has(.fx-stick) .totop{bottom:84px}
+  .fxp .fx{padding-bottom:88px}
+}
+@media (prefers-reduced-motion:reduce){.fx-stick{transition:none}}
+/* кнопки под «Забронировать»: показ во всю ширину, три действия с подписями */
+.fx-acts>.kb:not(.pri){grid-column:1/-1}
+.fx-mini{grid-template-columns:repeat(3,minmax(0,1fr))}
+.fx-mini .kb{gap:8px;padding:11px 8px;font-size:14px;white-space:nowrap}
+.fx-mini .kb[aria-pressed="true"]{color:var(--brand-d)}
+@container site (max-width:760px){.fx-mini .kb{flex-direction:column;gap:4px;padding:10px 4px}}
+/* телефон: звонок в одно касание в шапке */
+@container site (max-width:1180px){
+  .hdr .hdr-r .phone{display:grid;place-items:center;width:44px;height:44px;padding:0;border-radius:14px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);flex:none}
+  .hdr .hdr-r .phone span,.hdr .hdr-r .phone .ph-n{display:none}
+}
+@container site (max-width:760px){.hdr .hdr-r .phone{width:40px;height:40px}}
+/* переключатель ЖК не вылезает из рамки и не растягивает страницу */
+.xfil .seg,.vfil .seg{max-width:100%;overflow-x:auto;scrollbar-width:none}
+.xfil .seg::-webkit-scrollbar,.vfil .seg::-webkit-scrollbar{display:none}
+/* страница ЖК на телефоне: сначала фото дома, потом название и кнопки */
+@container site (max-width:760px){
+  #zd{display:flex;flex-direction:column}
+  #zd>.zd-gal{order:-1;margin-top:6px}
+}
+/* ---- каталог: меньше управления над списком, спокойные карточки ---- */
+.got{display:none!important} /* что понял ИИ, видно по плашкам условий — отдельная строка «Понял:» убрана */
+.grid.ai-on .card .match{display:none} /* «98%» без объяснения убрано: подбор теперь точный */
+/* карточка на всех ширинах как на телефоне: планировка, цена, параметры, ЖК и платёж; без шапки, без фиолетовой кнопки */
+.card{height:auto}
+.card .ch,.card .m2,.card .deal,.card .acts,.card .rows{display:none}
+.card .pic,.card:hover .pic,.card:focus-within .pic{flex:0 0 236px;margin-top:12px}
+.card .price{display:flex;align-items:center;gap:10px}
+.card .dealm{display:inline-block;font:600 14px/1 var(--body);color:#0B6B3A;background:#CFEFDC;border-radius:8px;padding:5px 8px}
+.card .spec{margin-top:4px}
+.card .subm{display:block;margin-top:2px;color:var(--mute);font-size:14px}
+.card .body{padding:14px 20px 20px}
+.card .pfav{display:grid;place-items:center;position:absolute;right:8px;top:8px;z-index:2;width:40px;height:40px;border:0;border-radius:12px;background:rgba(255,255,255,.92);color:var(--ink2);cursor:pointer;transition:color .2s ease-out,transform .15s ease-out}
+.card .pfav:active{transform:scale(.94)}
+.card .pfav .i{width:19px;height:19px}
+.card .pfav[aria-pressed="true"]{color:var(--brand)}
+.card .pfav[aria-pressed="true"] .i{fill:currentColor}
+.card,.card:hover{box-shadow:none}
+.card{transition:box-shadow .2s ease-out}
+@media (hover:hover){.card:hover{box-shadow:inset 0 0 0 1.5px var(--brand)}}
+@container site (max-width:760px){
+  .fl-main .rbar{margin-top:4px}
+  .chips-on{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:-22px;padding-inline:22px}
+  .chips-on::-webkit-scrollbar{display:none}
+  .chips-on>*{flex-shrink:0}
+  .card .pic,.card:hover .pic{flex-basis:230px}
+  .card .pic img{top:12px;height:calc(100% - 24px)}
+}
+
+/* ---- разгрузка: главная, квартира, ЖК, ипотека ---- */
+/* плашки способа оплаты («Ипотека», «Рассрочка») поверх фото и в шапках убраны: способы покупки описаны ниже */
+.pc .chips .tg-pay,#roofs .tg-pay,.zd-tags .tg-pay,.fx-tags .tg-pay,.panel .tg-pay{display:none}
+/* «Выгодно сейчас»: карточки занимают весь ряд */
+@container site (min-width:1181px){.deals{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}}
+/* страница квартиры: способ покупки, которого в этом ЖК нет, не показываем */
+/* список ЖК: фильтры для трёх проектов не нужны */
+#zFil{display:none}
+/* страница ЖК: факты — спокойной строкой, без плиток и значков */
+.zd-facts{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0;margin-top:22px;padding:16px 0;border-block:1px solid var(--line)}
+.zd-facts>div{background:none;border-radius:0;padding:0 18px;border-left:1px solid var(--line);display:flex;flex-direction:column;gap:2px;min-width:0}
+.zd-facts>div:first-child{border-left:0;padding-left:0}
+.zd-facts .i{display:none}
+.zd-facts span{font-size:14px;color:var(--mute)}
+.zd-facts b{font-weight:600;font-size:16px}
+@container site (max-width:760px){
+  .zd-facts{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:14px}
+  .zd-facts>div{padding:0 12px}
+  .zd-facts>div:nth-child(3n+1){border-left:0;padding-left:0}
+}
+/* преимущества: без надписи над заголовком и без плашек, повторяющих абзац; галерея без «01 / 02 / 03» */
+.us-e,.us-pts,.gc-n{display:none}
+/* ипотека: подробности программы — по нажатию */
+.mp-more{margin-top:18px;border-top:1px solid var(--line)}
+.mp-more>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 0;font-weight:600;cursor:pointer}
+.mp-more>summary::-webkit-details-marker{display:none}
+.mp-more>summary .rm{width:14px;height:7px;transform:rotate(180deg);transition:transform .25s ease-out;color:var(--brand);flex:none}
+.mp-more[open]>summary .rm{transform:none}
+.mp-more[open]{padding-bottom:6px}
+.mp-f{gap:6px 20px}
+.mp-f span{background:none;padding:0;border-radius:0}
+/* заголовки: строки примерно равной длины, без слова-сироты */
+h1,h2,h3{text-wrap:balance}
+/* ---- без «пилюль»: плашки и кнопки-плашки со скруглением 10, контейнеры вкладок — 14 ---- */
+.tg,.us-e,.us-pts span,.vd-s,.gi-c,.gi-l,.demo-lab,.ph-n,.card .deal,.card .match,.pr .lab,.sv .lab,.sv .more,.hs-ex button,.aip .hs-ex button,.ai-ex button,.kc-sug button,.pr-tm,.pa-e,.pa-go,.pv-cap,.pv-cat,.pv-go,.hi-st,.hi-era span,.hc-more span,.hc-zh em,.fo-d,.dl em,.zi em,.un-f em,.pc .sum em,.pg em small,.pg-z a,.bt-zk a,.wy .dots em,.xc-lv,.xc-pic .xc-lv,.vis-tag,.city,.mk-lead,.mk-toast,.lmt button,.f-foot .presets button,.nm-cats button{border-radius:10px}
+.crumb,.zd-nav,.gtabs,.pv-tabs{border-radius:14px}
+.crumb>a,.crumb>span,.zd-nav a,.zd-nav .kb,.gtabs button,.pv-tabs button,.csw-b{border-radius:10px}
+.pc .pbtn .kb{border-radius:14px}
+.fab{border-radius:16px}
+/* ---- телефон: вместо хлебных крошек одна ссылка «назад на уровень выше» ---- */
+@container site (max-width:760px){
+  .crumb{background:none;box-shadow:none;padding:0;margin-top:14px}
+  .crumb>a,.crumb>span,.crumb>i,.crumb>*{display:none}
+  .crumb>a:last-of-type{display:inline-flex;align-items:center;gap:8px;padding:9px 14px 9px 10px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);border-radius:12px;font-weight:600;font-size:15px;color:var(--ink)}
+  .crumb>a:last-of-type::before{content:"";width:16px;height:16px;flex:none;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 12H5M12 19l-7-7 7-7'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 12H5M12 19l-7-7 7-7'/%3E%3C/svg%3E") center/contain no-repeat}
+  /* вкладки «Паркинг / Кладовые / Коммерция» помещаются в экран */
+  #xtabs button .i{display:none}
+  #xtabs button{padding-inline:12px}
+}
+/* подбор на телефоне: кнопка «Показать» не просвечивает поверх фильтра */
+@container site (max-width:760px){.side .side-f{background:var(--surface);box-shadow:0 -12px 16px -8px var(--surface)}}
+/* фильтр на компьютере: названия ЖК помещаются в переключатель */
+.vfil #fZk button{flex:1 1 auto;padding:10px 7px;font-size:14px}
+
+/* ---- пустые места и переносы ---- */
+/* квартира, «Сколько платить»: если рассрочки в ЖК нет — ипотека слева, справа столбиком короткая заметка о рассрочке и «Наличными» */
+@container site (min-width:1001px){
+  .pc3:has(.pc3-c.off){grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);grid-template-rows:auto 1fr}
+  .pc3:has(.pc3-c.off) [data-pc="mort"]{grid-row:1/3}
+  .pc3:has(.pc3-c.off) .pc3-c.off{grid-column:2;grid-row:1}
+  .pc3:has(.pc3-c.off) .pc3-c.dark{grid-column:2;grid-row:2}
+}
+.pc3-c.off .pc3-ul,.pc3-c.off .pc3-no>.i{display:none}
+.pc3-c.off .pc3-no{background:none;padding:0}
+.pc3-c.off .pc3-h{opacity:1}
+.pc3-c:hover{transform:none;box-shadow:none}
+/* шахматка: подъезды по своей высоте и прижаты к низу (этажи совпадают по строкам), рамка — по содержимому */
+.kch{align-items:flex-end}
+.chs-wrap{width:fit-content;max-width:100%}
+/* «Самые доступные» на странице ЖК — четыре в ряд; «Похожие квартиры» — на всю ширину */
+#zd .grid{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+#zd .grid>.card{max-width:380px}
+.fx-sim{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.fx-sim>.fx-s{max-width:380px}
+/* главная: поле запроса занимает свободную высоту панели подбора */
+#hpAi .hs-box{flex:1;display:flex}
+#hpAi .hs-box textarea{flex:1;min-height:96px}
+/* «Помещения»: вопросы одной колонкой, панель фильтра — по числу условий */
+#xpage .faq{grid-template-columns:minmax(0,1fr);max-width:820px}
+.xfil{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+/* карточка ЖК: число квартир после цены */
+.panel .from .from-n::before{content:"· "}
+@container site (max-width:760px){
+  .panel .from .from-n{flex-basis:100%}
+  .panel .from .from-n::before{content:none}
+  /* «Изменить расчёт» — отдельной строкой слева, а не одиноко справа */
+  .fx-month .lnk{margin-left:0;flex-basis:100%;text-align:left}
+  /* подпись под графиком калькулятора — три значения столбиком, а не «два и один» */
+  #cL{display:flex;flex-direction:column;gap:4px}
+}
+@container site (max-width:760px){.mp-f{flex-direction:column;align-items:flex-start;gap:6px}}
+.fx-stick-p span i{font-style:normal}
+@container site (max-width:760px){.fx-stick-p span i{display:none}}
+/* выбор ЖК списком, когда ЖК больше трёх */
+.segsel{width:100%;height:46px;font-size:15px}
+.segsel-w{display:block}
+.chs-top .segsel-w{min-width:240px}
+
+/* ================= иерархия (27.11.2026, раздел «Иерархия» отчёта аудита) ================= */
+/* главная: постоянный главный заголовок над слайдами */
+.hm-top{padding:18px 0 4px}
+.hm-h1{margin:0;font:500 clamp(26px,3.4vw,48px)/1.08 var(--disp);letter-spacing:-.02em;max-width:26ch}
+.hm-sub{margin:8px 0 0;color:var(--ink2);font-size:17px}
+@container site (max-width:760px){.hm-top{padding:10px 0 0}.hm-sub{font-size:16px}}
+/* сплошной фиолетовый — только у главного действия. Свойства (класс дома, срок) — нейтральные */
+.tg-cls{background:var(--soft);color:var(--ink)}
+.tg-status{color:var(--ink2)}
+.panel .tg-cls,.pc .chips .tg-cls{background:#fff;color:var(--ink)}
+/* свойства в шапке ЖК и квартиры — текстом со значком, а не плашками, похожими на кнопки */
+.zd-tags,.fx-tags{gap:6px 18px}
+.zd-tags .tg,.fx-tags .tg{background:none;padding:0;border-radius:0;color:var(--ink2);font-size:15px}
+.zd-tags .tg .i,.fx-tags .tg .i{color:var(--mute)}
+.zd-tags .tg-hot,.fx-tags .tg-hot{color:#9A4A00}
+/* «выбрано» — тёмная заливка, как у вкладок; текущая страница в крошках и примеры запросов — без фиолетового */
+.nm-cats button[aria-pressed="true"]{background:var(--ink)}
+.crumb>span:last-child{color:var(--ink)}
+.hs-ex button,.aip .hs-ex button{color:var(--ink2)}
+/* страница квартиры: цена главнее заголовка, платёж обычным цветом */
+.fx h1{font-size:clamp(22px,1.9vw,28px);line-height:1.15}
+.fx-price b{font-size:40px}
+.fx-month b{color:var(--ink)}
+.fx-spec{margin:-8px 0 0;color:var(--ink);font-weight:500}
+@container site (max-width:760px){.fx-price b{font-size:30px}.fx h1{font-size:22px}}
+/* карточка в каталоге: ЖК — вторая по важности строка после цены */
+.card .czk{font-weight:500;font-size:15px;color:var(--ink);margin-top:2px}
+/* одна лестница заголовков: разделы — как .sec-h h2, заголовки внутри блоков — до 28 */
+.zd-sec .sec-h h2{font-size:clamp(30px,3vw,44px)}
+.us-t h3{font-size:clamp(22px,2vw,28px)}
+.sv h1,.sv h2{font-size:clamp(24px,2.2vw,30px)}
+@container site (max-width:760px){.sv h1,.sv h2{font-size:22px}}
+/* каталог: заголовок рабочего экрана в одну строку */
+main[data-page="flats"] .ph1{font-size:clamp(26px,2.6vw,36px);max-width:none}
+/* «Помещения»: под заголовком страницы — подзаголовок поменьше, а не второй такой же */
+.xh-t h2{font-size:clamp(22px,2vw,28px)}
+/* в списках мест главная кнопка страницы одна; кнопки в карточках — обычные */
+.xc .kb.pri{background:var(--bg);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+@media (hover:hover){.xc .kb.pri:hover{background:var(--bg);color:var(--brand-d);box-shadow:inset 0 0 0 1px var(--brand)}}
+/* контакты: раздел «Адреса домов» не громче основного */
+main[data-page="contacts"] .sec-h h2{font-size:clamp(26px,2.4vw,35px)}
+/* шторка подбора на телефоне: кнопка «Показать» поверх фильтра, а не под ним */
+.side-f{z-index:3}
+@container site (max-width:760px){.hm-h1{font-size:22px;line-height:1.14;max-width:none}.hm-sub span:first-child{display:none}}
+
+/* ---- страница ЖК: полоса разделов закреплена внизу экрана, по ширине содержимого (без пустого промежутка) ---- */
+.zd-nav{position:fixed;top:auto;left:50%;bottom:16px;transform:translateX(-50%);z-index:39;width:max-content;max-width:calc(100% - 32px);margin:0;overflow-x:auto;scrollbar-width:none;background:rgba(255,255,255,.95);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 0 0 1px var(--line)}
+.zd-nav .kb{margin-left:8px;display:inline-flex}
+.zd-nav .nv-s{display:none}
+main[data-page="project"]{padding-bottom:84px}
+@container site (max-width:760px){
+  .zd-nav{left:0;right:0;bottom:0;transform:none;width:auto;max-width:none;border-radius:0;gap:2px;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));box-shadow:0 -1px 0 var(--line)}
+  .zd-nav .kb{display:inline-flex;position:sticky;right:0;margin-left:6px;box-shadow:-10px 0 12px 2px rgba(255,255,255,.95)}
+  .zd-nav .nv-l{display:none}
+  .zd-nav .nv-s{display:inline}
+  body:has(.zd-nav) .tabbar{display:none}
+  body:has(.zd-nav) .totop{bottom:76px}
+  main[data-page="project"]{padding-bottom:72px}
+}
+@container site (max-width:760px){.fx-sim{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* страница ЖК на телефоне: одно фото вместо трёх (слова владелицы 27.11.2026); остальные — в галерее ниже */
+@container site (max-width:760px){#zd>.zd-gal{grid-template-columns:minmax(0,1fr);grid-template-rows:240px}#zd>.zd-gal img:not(:first-child){display:none}#zd>.zd-gal img:first-child{grid-column:auto}}
+
+/* полоса разделов ЖК: на компьютере — ряд ссылок; на телефоне — кнопка «текущий раздел» со списком и полная кнопка записи */
+.zd-nav .nv-menu{display:none}
+.zd-nav .nv-list{display:contents}
+@keyframes nvin{from{opacity:0;transform:translateY(6px) scale(.98)}to{opacity:1;transform:none}}
+@container site (max-width:760px){
+  .zd-nav{overflow:visible;gap:8px}
+  .zd-nav .nv-menu{display:inline-flex;position:static;flex:1 1 0;min-width:0;margin-left:0;justify-content:space-between;gap:8px;padding:12px 14px;box-shadow:inset 0 0 0 1px var(--line);border-radius:12px;font-size:15px}
+  .zd-nav .nv-menu .nv-cur{flex:1;min-width:0;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .zd-nav .nv-menu .caret{flex:none;transition:transform .2s ease-out}
+  .zd-nav.open .nv-menu .caret{transform:rotate(180deg)}
+  .zd-nav .nv-list{display:none;position:absolute;left:10px;right:10px;bottom:calc(100% + 8px);flex-direction:column;gap:2px;padding:6px;background:#fff;border-radius:16px;box-shadow:0 0 0 1px var(--line),0 18px 40px -22px rgba(17,17,20,.4);transform-origin:bottom left}
+  .zd-nav.open .nv-list{display:flex;animation:nvin .2s ease-out}
+  .zd-nav .nv-list a{padding:13px 14px;font-size:16px;border-radius:10px}
+  .zd-nav .kb.pri{position:static;flex:0 0 auto;margin-left:0;box-shadow:none;justify-content:center;padding:12px 14px;border-radius:12px;font-size:15px;white-space:nowrap}
+  .zd-nav .nv-l{display:inline}
+  .zd-nav .nv-s{display:none}
+}
+@media (prefers-reduced-motion:reduce){.zd-nav.open .nv-list{animation:none}.zd-nav .nv-menu .caret{transition:none}}
+
+/* ---- слова владелицы 27.11.2026, ночь ---- */
+/* главная: ряд кружков стоит под блоком со слайдом и подбором и мельче */
+.stories{padding:16px 0 4px;gap:18px}
+.sto{width:auto;min-width:58px;gap:6px}
+.sto .hs{width:56px;height:59px}
+@container site (max-width:760px){.stories{padding:14px 0 2px;gap:16px}.sto .hs{width:52px;height:55px}}
+/* главная: блок «Подобрать квартиру» — в цвет бренда (решение владелицы; исключение из правила «фиолетовый только акцент») */
+#hs{background:var(--brand);color:#fff}
+#hs h2,#hs .hs-qh{color:#fff}
+#hs .seg{background:rgba(255,255,255,.16)}
+#hs .seg button{color:rgba(255,255,255,.88)}
+#hs .seg button[aria-pressed="true"]{color:var(--ink)}
+#hs .seg .thumb{background:#fff;box-shadow:none}
+#hs .hs-box{background:#fff}
+#hs .hs-box:focus-within{box-shadow:inset 0 0 0 2px var(--ink)}
+#hs .hs-ex button{background:rgba(255,255,255,.16);color:#fff}
+@media (hover:hover){#hs .hs-ex button:hover{background:#fff;color:var(--brand-d)}}
+#hs .kb.pri{background:#fff;color:var(--brand-d)}
+@media (hover:hover){#hs .kb.pri:hover{background:var(--ink);color:#fff}}
+#hs .hs-links .lnk,#hs .hs-links .lnk .i{color:#fff}
+#hs .qz-top,#hs .hs-q-n,#hs .hs-got,#hs .hs-log{color:rgba(255,255,255,.86)}
+#hs .qz-bar i{background:rgba(255,255,255,.3)}
+#hs .qz-bar i.now,#hs .qz-bar i.ok{background:#fff}
+#hs :focus-visible{outline-color:#fff}
+/* страница ЖК: район написан в подзаголовке — в строке адреса его не повторяем */
+
+/* страница квартиры, шапка: три ключевых факта парами «подпись — значение», чтобы читалось с одного взгляда */
+.fx-key{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin:0}
+.fx-key>div{padding:0 16px;border-left:1px solid var(--line);min-width:0}
+.fx-key>div:first-child{padding-left:0;border-left:0}
+.fx-key dt{font-size:14px;line-height:1.3;color:var(--mute)}
+.fx-key dd{margin:2px 0 0;font:600 20px/1.2 var(--body);color:var(--ink);white-space:nowrap}
+.fx-side .fx-tags{margin-top:-6px}
+@container site (max-width:760px){.fx-key>div{padding:0 12px}.fx-key dd{font-size:18px}}
+@container site (max-width:760px){
+  .zd-nav{gap:6px;padding-inline:8px}
+  .zd-nav .nv-menu{padding:12px 10px 12px 12px;font-size:14.5px;gap:6px}
+  .zd-nav .kb.pri{padding:12px 11px;font-size:14.5px;gap:6px}
+  .zd-cta [data-visit]{display:none} /* запись на показ всегда есть в нижней полосе */
+}
+
+/* форма домика — в меру (слова владелицы 27.11.2026): у рядовых картинок обычные скруглённые углы.
+   Крыша остаётся у первого экрана главной, главного фото ЖК и тёмного блока заявки. Вернуть — удалить это правило */
+.us-pic,.xh-img,.ct-pic,.mp-pic,.ah-pic,.of-map,.l-pic,.vis-pic,.zc-img{clip-path:none!important;border-radius:var(--r);overflow:hidden}
+
+/* ипотека: плашка платежа стоит под картинкой, а не поверх неё — ключевой образ не перекрыт (слова владелицы 27.11.2026) */
+.mp-pic{aspect-ratio:auto;background:var(--surface)}
+.mp-pic img{aspect-ratio:1/1;height:auto}
+.mp-pay{position:static;background:none;-webkit-backdrop-filter:none;backdrop-filter:none;border-radius:0;padding:14px 18px 16px}
+/* блок заявки: табличка «Менеджеры на связи» не закрывает фото (и не горит ночью) — убрана (27.11.2026) */
+.l-pic figcaption{display:none}
+/* нижняя полоса ЖК на телефоне: слева кнопка «назад» к списку проектов */
+.zd-nav .nv-back{display:none}
+@container site (max-width:760px){
+  .zd-nav .nv-back{display:grid;place-items:center;position:static;flex:0 0 46px;width:46px;height:46px;padding:0;margin:0;border-radius:12px;box-shadow:inset 0 0 0 1px var(--line);color:var(--ink);background:var(--surface)}
+  .zd-nav .nv-back .i{width:20px;height:20px}
+  .zd-nav .nv-menu{padding:12px 8px 12px 12px;font-size:14px}
+  .zd-nav .kb.pri{padding:12px 10px;font-size:14px}
+}
+/* шапка ЖК: название → класс и срок → адрес с ориентиром. Пояснение из заголовка («квартиры рядом с …») остаётся в коде для поисковиков,
+   а на экране ориентир стоит после адреса: это одно и то же место, сказанное точно и понятно (слова владелицы 27.11.2026) */
+.zd-h h1>span{position:absolute!important;width:1px!important;height:1px!important;margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;display:block!important}
+.zd-h h1{margin:0}
+.zd-h .zd-tags{margin:10px 0 8px}
+.zd-h .fx-addr{margin:0}
+/* шапка ЖК: класс и срок стоят в строке фактов (шесть пунктов в линию), под названием — только адрес с ориентиром */
+.zd-h .fx-addr{margin-top:10px}
+
+/* строка фактов ЖК, новая подача (слова владелицы 27.11.2026: «переоформить как-то красивее»):
+   крупное значение, подпись под ним, без рамок и разделителей; шесть пунктов на всю ширину */
+.zd-facts{display:flex;flex-wrap:wrap;justify-content:space-between;gap:22px 28px;margin-top:26px;padding:24px 0 26px;border-block:1px solid var(--line)}
+.zd-facts>div,.zd-facts>div:first-child{display:flex;flex-direction:column-reverse;gap:6px;padding:0;border:0;min-width:0}
+.zd-facts b{font:600 clamp(22px,2.3vw,30px)/1.1 var(--body);letter-spacing:-.015em;white-space:nowrap;font-variant-numeric:tabular-nums}
+.zd-facts span{font-size:14px;line-height:1.3;color:var(--mute)}
+@container site (max-width:760px){
+  .zd-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 16px;padding:20px 0 22px}
+  .zd-facts>div,.zd-facts>div:nth-child(3n+1),.zd-facts>div:first-child{padding:0;border:0}
+  .zd-facts b{font-size:22px;white-space:normal}
+}
+/* шапка ЖК: цена одной строкой «от 20,3 млн ₸» */
+.zd-from b{white-space:nowrap}
+/* шапка ЖК — одна колонка слева: название → адрес с ориентиром → цена и кнопки (слова владелицы 28.11.2026: «инфа слева, инфа справа, будто каша») */
+.zd-h{flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:18px;flex-wrap:nowrap}
+.zd-cta{justify-content:flex-start;gap:10px 12px}
+.zd-from{margin-right:8px}
+/* фото в шапке ЖК чуть ниже, чтобы строка фактов помещалась в первый экран над закреплённой полосой (экран 900 px по высоте) */
+@container site (min-width:761px){#zd>.zd-gal{grid-template-rows:178px 178px}}
+
+/* ===== 28.11.2026 — «Шторка»: первый экран ЖК на телефоне (слова владелицы: «Да, Шторку») =====
+   Фото на всю ширину экрана, листаются пальцем; снизу лист в цвет бренда: название, адрес с ориентиром, цена, кнопка.
+   Строка «Наши проекты» сверху убрана: кнопка «назад» стоит в нижней полосе. На компьютере ничего не меняется.
+   Размеры считаются от ширины экрана (cqw), поэтому блок одинаково встаёт на 320 и на 430 px; длинное название и длинная
+   казахская цена ужимаются скриптом в zhk.js (fitSheet). Откат: удалить этот раздел и функции sheet/paintPrice/fitSheet в zhk.js */
+.zd-seg,.zd-from .zp{display:none}
+@container site (max-width:760px){
+  #detail:has(#zd .zd-h) .crumb{display:none}
+  #zd{position:relative}
+  #zd>.zd-gal{order:-1;display:flex;gap:0;width:100cqw;margin:0 0 0 calc(50% - 50cqw);height:clamp(130px,calc(100svh - 430px),520px);overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;scrollbar-width:none;background:var(--surface)}
+  #zd>.zd-gal::-webkit-scrollbar{display:none}
+  #zd>.zd-gal img,#zd>.zd-gal img:first-child,#zd>.zd-gal img:not(:first-child),#zd>.zd-gal img:nth-child(4){display:block;flex:0 0 100%;width:100%;height:100%;object-fit:cover;border-radius:0;clip-path:none!important;grid-column:auto;grid-row:auto;scroll-snap-align:start;scroll-snap-stop:always}
+  .zd-seg{display:flex;gap:5px;position:absolute;left:calc(50% - 50cqw + 14px);right:calc(50% - 50cqw + 14px);top:12px;z-index:2;pointer-events:none}
+  .zd-seg i{flex:1;height:3px;border-radius:2px;background:rgba(20,20,24,.38)}
+  .zd-seg i.on{background:#fff}
+  #zd>.zd-h{position:relative;z-index:1;margin:-34px calc(50% - 50cqw) 0;padding:28px calc(50cqw - 50%) 24px;border-radius:28px 28px 0 0;background:var(--brand);color:#fff;gap:20px;align-items:stretch}
+  #zd>.zd-h>div:first-child{min-width:0}
+  #zd>.zd-h .zd-name{margin:0;color:#fff;font-size:clamp(30px,10.3cqw,46px);line-height:1.04;letter-spacing:-.03em;text-wrap:balance}
+  #zd>.zd-h .fx-addr{display:flex;align-items:center;margin-top:10px;font-size:14px;line-height:1.35;color:rgba(255,255,255,.94);white-space:nowrap}
+  #zd>.zd-h .fx-addr>span{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
+  #zd>.zd-h .fx-addr.fx-noicon .i{display:none}
+  /* совсем короткий экран: лист сжимается, чтобы кнопки не ушли под нижнюю полосу */
+  #zd>.zd-h.zd-tight{padding-top:20px;padding-bottom:14px;gap:12px}
+  #zd>.zd-h.zd-tight .zd-name{font-size:clamp(26px,8.6cqw,38px)}
+  #zd>.zd-h.zd-tight .fx-addr{margin-top:6px}
+  #zd>.zd-h.zd-tight .zp{font-size:clamp(52px,18.5cqw,84px)}
+  #zd>.zd-h.zd-tight .zd-cta{gap:8px}
+  #zd>.zd-h.zd-tight .zd-cta .kb{padding-block:11px}
+  #zd>.zd-h .fx-addr .i{color:#fff}
+  #zd>.zd-h .zd-cta{display:flex;flex-wrap:wrap;align-items:stretch;gap:10px}
+  #zd>.zd-h .zd-from{flex:0 0 100%;min-width:0;margin:0 0 4px}
+  #zd>.zd-h .zd-from b{color:#fff}
+  .zd-from .zp-src{position:absolute!important;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .zd-from .zp{display:flex;align-items:baseline;gap:.1em;width:max-content;color:#fff;font:600 clamp(64px,23.6cqw,106px)/.92 var(--body);letter-spacing:-.05em;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .zd-from .zp em{font-style:normal}
+  .zd-from .zp span{display:inline-block;color:inherit;font-size:.326em;line-height:1;letter-spacing:-.02em}
+  .zd-from .zp span:first-child{font-size:.24em}
+  #zd>.zd-h .zd-cta .kb{flex:1 1 0;min-width:0;padding-inline:8px;gap:6px;font-size:clamp(14px,3.85cqw,15px);justify-content:center;white-space:nowrap;background:rgba(24,10,64,.28);color:#fff;box-shadow:none;transition:background .2s ease-out,transform .15s ease-out}
+  #zd>.zd-h .zd-cta .kb:hover{background:rgba(24,10,64,.4)}
+  #zd>.zd-h .zd-cta .kb:active{transform:scale(.97)}
+  #zd>.zd-h .zd-cta .kb:focus-visible{outline:2px solid #fff;outline-offset:2px}
+  #zd>.zd-h .zd-cta .kb .i{color:#fff}
+  #zd>.zd-facts{margin-top:0;border-top:0}
+}
+@media (prefers-reduced-motion:reduce){#zd>.zd-h .zd-cta .kb{transition:none}}
+
+/* ===== 28.11.2026 — без «детских» картинок (слова владелицы: «слишком детские», «вот эти убрать бы», «или заменить») =====
+   «Под домом и на первом этаже»: картинка стоит сверху, текст под ней на светлом фоне — ничего не написано поверх картинки,
+   нет затемнения и овальных плашек. На телефоне карточка лежит строкой: картинка слева, текст справа.
+   Карточки мест в паркинге, кладовых и коммерции: вместо одинаковой картинки на каждой — номер и этаж на спокойной плашке.
+   Откат: удалить этот раздел, вернуть пути card-*.webp в zhk.js и <img> в extras.js, файлы — из git */
+.under{grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+.un{min-height:0;padding:0;color:var(--ink);background:var(--surface);justify-content:flex-start;isolation:auto;transition:opacity .6s,transform .7s var(--ease),box-shadow .2s ease-out}
+.un::after{content:none}
+.un img{position:static;z-index:auto;display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;background:var(--brand-l);transition:none}
+.un:hover img{transform:none}
+.un-i{display:none}
+.un>div{display:flex;flex-direction:column;flex:1;min-width:0;padding:18px 20px 20px}
+.un b{font:500 22px/1.2 var(--body);letter-spacing:-.01em;color:var(--ink)}
+.un p{margin:6px 0 0;font-size:14.5px;line-height:1.45;color:var(--ink2);max-width:42ch}
+.un-f{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-top:auto;padding-top:14px;flex-wrap:nowrap}
+.un-f em{background:none;border-radius:0;padding:0;font:600 18px/1.2 var(--body);letter-spacing:-.01em;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
+.un-f>span{color:var(--brand-d);white-space:nowrap}
+@media (hover:hover){.un:hover{box-shadow:inset 0 0 0 1px var(--brand)}}
+.un.in:active{transform:scale(.99)}
+.un:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+@container site (max-width:760px){
+  /* телефон: лента карточек, листается пальцем; описания нет — картинка, название, цена */
+  .under{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:calc(50cqw - 50%);margin-inline:calc(50% - 50cqw);padding-inline:calc(50cqw - 50%);scrollbar-width:none;overscroll-behavior-x:contain}
+  .under::-webkit-scrollbar{display:none}
+  .un,.un.in{flex:0 0 76cqw;min-height:0;opacity:1;transform:none;scroll-snap-align:start}
+  .un>div{padding:14px 16px 16px}
+  .un b{font-size:18px}
+  .un p{display:none}
+  .un-f{margin-top:0;padding-top:10px;gap:6px} /* цена сразу под названием: без дыры в середине карточки */
+  .un-f em{font-size:clamp(14px,4.1cqw,16px)}
+}
+@media (prefers-reduced-motion:reduce){.un{transition:none}}
+/* карточки мест: номер и этаж без картинки */
+.xc-pic,.xc-pic.store,.xc-pic.commerce{height:auto;min-height:0;display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:14px 14px 13px;margin:10px 10px 0;border-radius:14px;background:var(--brand-l);overflow:visible}
+.xc-pic b{position:static;padding:0;border-radius:0;background:none;-webkit-backdrop-filter:none;backdrop-filter:none;font:600 22px/1.1 var(--body);letter-spacing:-.01em;color:var(--brand-d);white-space:nowrap;font-variant-numeric:tabular-nums}
+.xc-pic .xc-lv{position:static;display:inline-flex;align-items:center;gap:5px;padding:0;border-radius:0;background:none;-webkit-backdrop-filter:none;backdrop-filter:none;color:var(--ink2);font-size:14px;font-weight:500;white-space:nowrap}
+@container site (max-width:760px){.xc-pic,.xc-pic.store,.xc-pic.commerce{height:auto;padding:12px 12px 11px}.xc-pic b{font-size:18px}}

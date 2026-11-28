@@ -247,3 +247,14 @@
 /* ползунок: в покое точка, при наведении и перетаскивании — домик (18.11.2026) */
 .kr input::-webkit-slider-thumb:hover,.krange::-webkit-slider-thumb:hover{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M10 3.2 16.6 6.95V17.1H3.4V6.95Z' fill='%237F42E1' stroke='%237F42E1' stroke-width='3.8' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}.kr input::-webkit-slider-thumb:active,.krange::-webkit-slider-thumb:active{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M10 3.2 16.6 6.95V17.1H3.4V6.95Z' fill='%237F42E1' stroke='%237F42E1' stroke-width='3.8' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}.kr input::-moz-range-thumb:hover,.krange::-moz-range-thumb:hover{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M10 3.2 16.6 6.95V17.1H3.4V6.95Z' fill='%237F42E1' stroke='%237F42E1' stroke-width='3.8' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}.kr input::-moz-range-thumb:active,.krange::-moz-range-thumb:active{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M10 3.2 16.6 6.95V17.1H3.4V6.95Z' fill='%237F42E1' stroke='%237F42E1' stroke-width='3.8' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}
 .kr input::-webkit-slider-thumb:hover,.krange::-webkit-slider-thumb:hover,.kr input::-webkit-slider-thumb:active,.krange::-webkit-slider-thumb:active{transform:scale(1.12)}
+
+/* окно «Избранное» (27.11.2026) */
+.kfav{display:flex;flex-direction:column;gap:8px;max-height:min(52vh,460px);overflow-y:auto;margin:0 -4px;padding:0 4px}
+.kfav-r{display:flex;gap:8px;align-items:center}
+.kfav-o{flex:1;min-width:0;display:flex;gap:12px;align-items:center;border:0;background:var(--surface);border-radius:14px;padding:8px;text-align:left;font:15px/1.35 var(--body);color:var(--mute);cursor:pointer;transition:box-shadow .2s ease-out}
+.kfav-o:hover{box-shadow:inset 0 0 0 1px var(--brand)}
+.kfav-o:active{transform:scale(.99)}
+.kfav-o .kc-pic{flex-shrink:0;width:56px;height:56px;border-radius:10px;background:#fff;display:grid;place-items:center;overflow:hidden}
+.kfav-o img{width:100%;height:100%;object-fit:contain}
+.kfav-o b{display:block;color:var(--ink);font-weight:600}
+.kfav-r .kb.ic{flex-shrink:0}

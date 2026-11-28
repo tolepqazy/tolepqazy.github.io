@@ -14,6 +14,7 @@
   function tab(k) {
     $$('#ftabs [data-tab]').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === k));
     $$('.fpane').forEach(p => p.hidden = p.dataset.pane !== k);
+    $('#ftabs').hidden = k === 'flats'; // в каталоге квартир вкладки «Паркинг / Кладовые / Коммерция» не показываем: они есть в меню «Помещения» (27.11.2026)
     if (k !== 'flats' && !mounted[k]) mounted[k] = window.BQE.mount($(`.xm[data-x="${k}"]`), k, { more: `extra.html#${k}`, moreT: 'Подробнее о разделе' });
     S_.layout(); placeSegs();
   }
@@ -21,21 +22,28 @@
 
   /* фильтр */
   const PR = [Math.floor(Math.min(...FL.map(f => f.p)) / 1e6), Math.ceil(Math.max(...FL.map(f => f.p)) / 1e6)];
-  const MR = [Math.floor(Math.min(...FL.map(f => monthly(f.p))) / 1000), Math.ceil(Math.max(...FL.map(f => monthly(f.p))) / 1000)];
+  const MR = [Math.floor(Math.min(...FL.map(f => monthly(f.p, f.b))) / 1000), Math.ceil(Math.max(...FL.map(f => monthly(f.p, f.b))) / 1000)];
   const AR = [Math.floor(Math.min(...FL.map(f => f.a))), Math.ceil(Math.max(...FL.map(f => f.a)))];
   const FLR = [1, Math.max(...FL.map(f => f.fl))];
   const st = { zk: 'all', rooms: new Set(), pmode: 'price', price: [...PR], month: [...MR], area: [...AR], floor: [...FLR], notFirst: false, notLast: false, ready: 'any', pay: 'any', near: new Set(), has: new Set(), sort: 'mix', limit: 12, ai: null, deal: false };
   const HAS = { face: [/face/i, 'Face ID', 'face'], ceil: [/потол/i, 'Потолки 3 м', 'ceil'], yard: [/двор/i, 'Закрытый двор', 'tree'], park: [/паркинг/i, 'Паркинг', 'car'], kids: [/детск|кино/i, 'Кинорум и детская', 'kid'] };
   const NEAR = [['lrt', 'ЛРТ', 'route'], ['mall', 'ТРЦ', 'mall'], ['edu', 'Образование', 'school'], ['med', 'Медицина', 'shield'], ['park', 'Парк', 'tree'], ['mosque', 'Мечеть', 'mosque']];
   const hasB = (b, k) => ZK[b].benefits.some(x => HAS[k][0].test(x));
+  /* сколько вариантов помещается рядом кнопок («Все» + три ЖК). Если ЖК станет больше — тот же выбор показывается выпадающим списком */
+  const SEG_MAX = 4;
   function seg(el, opts, key) {
+    if (opts.length > SEG_MAX) {
+      el.classList.remove('seg'); el.classList.add('segsel-w');
+      el.innerHTML = `<select class="sort segsel" aria-label="Выбор">${opts.map(([v, t]) => `<option value="${v}">${t}</option>`).join('')}</select>`;
+      el.firstChild.value = st[key]; el.addEventListener('change', e => { st[key] = e.target.value; apply(); }); return;
+    }
     el.innerHTML = '<span class="thumb"></span>' + opts.map(([v, t]) => `<button type="button" data-v="${v}" aria-pressed="${st[key] === v}">${t}</button>`).join('');
     el.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; st[key] = b.dataset.v; syncSeg(el, key); apply(); });
   }
-  function syncSeg(el, key) { $$('button', el).forEach(b => b.setAttribute('aria-pressed', b.dataset.v === st[key])); placeThumb(el); }
+  function syncSeg(el, key) { const sel = $('select.segsel', el); if (sel) { sel.value = st[key]; return; } $$('button', el).forEach(b => b.setAttribute('aria-pressed', b.dataset.v === st[key])); placeThumb(el); }
   function placeThumb(el) { const b = $('[aria-pressed="true"]', el), t = $('.thumb', el); if (!b || !t || !b.offsetWidth) return; t.style.left = b.offsetLeft + 'px'; t.style.width = b.offsetWidth + 'px'; if (el.scrollWidth > el.clientWidth + 1) el.scrollTo({ left: b.offsetLeft - (el.clientWidth - b.offsetWidth) / 2, behavior: 'smooth' }); }
   const placeSegs = () => $$('.seg').forEach(placeThumb);
-  seg($('#fZk'), [['all', 'Все'], ...ORDER.map(b => [b, { life: 'Life', plaza: 'Plaza Residence', eco: 'Eco Park' }[b]])], 'zk');
+  seg($('#fZk'), [['all', 'Все'], ...ORDER.map(b => [b, SHORT[b].replace('Alatau ', '')])], 'zk');
   seg($('#fReady'), [['any', 'Любая'], ['done', 'Готов'], ['build', 'Строится']], 'ready');
   seg($('#fPay'), [['any', 'Любой'], ['mort', 'Ипотека'], ['inst', 'Рассрочка']], 'pay');
   $('#fRooms').innerHTML = [1, 2, 3, 4].map(r => `<button type="button" data-r="${r}" aria-pressed="false">${r === 4 ? '4+' : r}</button>`).join('');
@@ -51,7 +59,7 @@
     a.oninput = () => { upd(a); apply(); }; b.oninput = () => { upd(b); apply(); };
     el.set = v => { a.value = v[0]; b.value = v[1]; upd(); }; upd();
   }
-  const priceRange = () => { if (st.pmode === 'price') { dual($('#rPrice'), 'price', PR, 1, $('#vPrice'), v => v + ' млн'); $('#lPrice').textContent = 'Цена, млн ₸'; } else { dual($('#rPrice'), 'month', MR, 10, $('#vPrice'), v => fmt(v * 1000) + ' ₸'); $('#lPrice').textContent = 'Платёж в месяц'; } };
+  const priceRange = () => { const keep = [...(st.pmode === 'price' ? st.price : st.month)]; if (st.pmode === 'price') { dual($('#rPrice'), 'price', PR, 1, $('#vPrice'), v => v + ' млн'); $('#lPrice').textContent = 'Цена, млн ₸'; } else { dual($('#rPrice'), 'month', MR, 10, $('#vPrice'), v => fmt(v * 1000) + ' ₸'); $('#lPrice').textContent = 'Платёж в месяц'; } $('#rPrice').set(keep); }; // ползунок пересоздаётся, выбранное значение сохраняем (27.11.2026: комнаты сбрасывали цену)
   priceRange();
   $('#pmode').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; st.pmode = b.dataset.v; st.price = [...PR]; st.month = [...MR]; $$('#pmode button').forEach(x => x.setAttribute('aria-pressed', x === b)); priceRange(); apply(); });
   dual($('#rArea'), 'area', AR, 1, $('#vArea'), v => v);
@@ -73,7 +81,7 @@
   function matchF(f) {
     if (st.zk !== 'all' && f.b !== st.zk) return false;
     if (st.rooms.size && !st.rooms.has(Math.min(f.r, 4))) return false;
-    if (st.pmode === 'price' ? (f.p < st.price[0] * 1e6 || f.p > (st.price[1] + 1) * 1e6) : (monthly(f.p) < st.month[0] * 1000 || monthly(f.p) > st.month[1] * 1000 + 999)) return false;
+    if (st.pmode === 'price' ? (f.p < st.price[0] * 1e6 || f.p > st.price[1] * 1e6) : (monthly(f.p, f.b) < st.month[0] * 1000 || monthly(f.p, f.b) > st.month[1] * 1000)) return false;
     if (f.a < st.area[0] || f.a >= st.area[1] + 1) return false;
     if (f.fl < st.floor[0] || f.fl > st.floor[1]) return false;
     if (st.notFirst && f.fl <= 2) return false;
@@ -89,7 +97,7 @@
     const q = st.ai; if (!q) return null; let s = 100;
     if (q.priceMax) s -= Math.max(0, (f.p / 1e6 - q.priceMax * .85) / q.priceMax * 60);
     if (q.near) s -= (K.nearMin(f.b, q.near) || 12) * 1.5;
-    if (q.monthMax) s -= Math.max(0, (monthly(f.p) - q.monthMax * .85) / q.monthMax * 60);
+    if (q.monthMax) s -= Math.max(0, (monthly(f.p, f.b) - q.monthMax * .85) / q.monthMax * 60);
     return Math.max(60, Math.min(99, Math.round(s)));
   }
   function filtered() {
@@ -103,7 +111,7 @@
     const c = [];
     if (st.zk !== 'all') c.push(['zk', SHORT[st.zk]]);
     if (st.rooms.size) c.push(['rooms', [...st.rooms].sort().map(r => r === 4 ? '4+' : r).join(', ') + ' комн.']);
-    if (st.pmode === 'price' && st.price + '' !== PR + '') c.push(['price', `${st.price[0]}–${st.price[1]} млн ₸`]);
+    if (st.pmode === 'price' && st.price + '' !== PR + '') c.push(['price', st.price[0] === PR[0] ? `до ${st.price[1]} млн ₸` : st.price[1] === PR[1] ? `от ${st.price[0]} млн ₸` : `${st.price[0]}–${st.price[1]} млн ₸`]);
     if (st.pmode === 'month' && (st.month[1] < MR[1] - 10 || st.month[0] > MR[0] + 10)) c.push(['price', `до ${fmt(st.month[1] * 1000)} ₸/мес`]);
     if (st.area + '' !== AR + '') c.push(['area', `${st.area[0]}–${st.area[1]} м²`]);
     if (st.floor + '' !== FLR + '') c.push(['floor', `${st.floor[0]}–${st.floor[1]} этаж`]);
@@ -271,10 +279,16 @@
 
   /* шахматка: неподходящие квартиры бледнеют, наведение — суперподсказка */
   let chB = 'life';
-  $('#chsZk').innerHTML = '<span class="thumb"></span>' + ORDER.map(b => `<button type="button" aria-pressed="${b === chB}" data-b="${b}">${SHORT[b]}</button>`).join('');
-  $('#chsZk').onclick = e => { const b = e.target.closest('[data-b]'); if (b) { chB = b.dataset.b; renderChess(); } };
+  if (ORDER.length + 1 > SEG_MAX) { // много ЖК — выпадающий список вместо ряда кнопок
+    $('#chsZk').classList.remove('seg'); $('#chsZk').classList.add('segsel-w');
+    $('#chsZk').innerHTML = `<select class="sort segsel" aria-label="Жилой комплекс">${ORDER.map(b => `<option value="${b}">${SHORT[b]}</option>`).join('')}</select>`;
+    $('#chsZk').onchange = e => { chB = e.target.value; renderChess(); };
+  } else {
+    $('#chsZk').innerHTML = '<span class="thumb"></span>' + ORDER.map(b => `<button type="button" aria-pressed="${b === chB}" data-b="${b}">${SHORT[b]}</button>`).join('');
+    $('#chsZk').onclick = e => { const b = e.target.closest('[data-b]'); if (b) { chB = b.dataset.b; renderChess(); } };
+  }
   function renderChess() {
-    $$('#chsZk button').forEach(b => b.setAttribute('aria-pressed', b.dataset.b === chB)); placeThumb($('#chsZk'));
+    const chSel = $('#chsZk select'); if (chSel) chSel.value = chB; else { $$('#chsZk button').forEach(b => b.setAttribute('aria-pressed', b.dataset.b === chB)); placeThumb($('#chsZk')); }
     $('#chsG').innerHTML = K.chess(chB);
     const ok = new Set(list.map(f => f.id)); $$('#chsG [data-flat]').forEach(c => c.classList.toggle('dim', !ok.has(+c.dataset.flat)));
   }
@@ -306,6 +320,6 @@
 
   S_.onLayout(placeSegs);
   const fromURL = !location.hash && readURL();
-  qz.draw(); render(); mode(fromURL ? 'filter' : 'quiz');
+  qz.draw(); render(); mode('filter'); // по умолчанию — обычный фильтр, квиз и ИИ рядом (27.11.2026)
   S_.start(); urlOn = true;
 })();

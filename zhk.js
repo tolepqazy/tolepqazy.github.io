@@ -10,7 +10,7 @@
 
   /* список проектов: компактные карточки и фильтр (проектов со временем станет больше) */
   if ($('#zgrid')) {
-    $('#zMeta').innerHTML = `<div><b class="num">${EX['Parking place'].n + EX.Storeroom.n}</b>машиномест и кладовых</div><div><b class="num">${FL.length}</b>квартир в продаже</div><div><b class="num">${ORDER.filter(b => K.status(b).k === 'done').length}</b>дом уже сдан</div>`;
+    $('#zMeta').innerHTML = `<div><b class="num">${EX['Parking place'].n + EX.Storeroom.n}</b>машиномест и кладовых</div><div><b class="num">${FL.length}</b>${plural(FL.length, 'квартира в продаже', 'квартиры в продаже', 'квартир в продаже')}</div><div><b class="num">${ORDER.filter(b => K.status(b).k === 'done').length}</b>${plural(ORDER.filter(b => K.status(b).k === 'done').length, 'дом уже сдан', 'дома уже сданы', 'домов уже сдано')}</div>`;
     const ZF = [['st', [['all', 'Все'], ['build', 'Строятся'], ['done', 'Сданы']]], ['cls', [['all', 'Любой класс'], ['Комфорт+', 'Комфорт+'], ['Бизнес', 'Бизнес']]], ['pay', [['all', 'Любая оплата'], ['mort', 'Ипотека'], ['inst', 'Рассрочка']]]];
     const zf = { st: 'all', cls: 'all', pay: 'all' };
     $('#zFil').innerHTML = ZF.map(([k, o]) => `<div class="zf" data-f="${k}">${o.map(([v, t]) => `<button type="button" data-v="${v}" aria-pressed="${v === 'all'}">${t}</button>`).join('')}</div>`).join('') + `<span class="zf-n num" id="zfN"></span>`;
@@ -42,7 +42,7 @@
     return `<a class="panel" data-b="${b}" href="project.html#${b}" aria-label="${SHORT[b]}: ${kv(s.n)}"><img src="${PHOTO[b]}" alt="">
       <div class="chips">${tagHTML(b)}</div>
       <div class="pin"><h2>${SHORT[b]}</h2><div class="addr">${z.addr} · ${z.area}</div>
-        <div class="from"><span>от</span><b class="num">${mln(s.min)} ₸</b><span>· ${kv(s.n)}</span></div>
+        <div class="from"><span>от</span><b class="num">${mln(s.min)} ₸</b><span class="from-n">${kv(s.n)}</span></div>
         <div class="peek"><div><table class="num">${s.rows.map(([r, x]) => `<tr><td>${rName(r)}</td><td>от ${area(x.a)} м²</td><td>от ${mln(x.p)} ₸</td></tr>`).join('')}</table><span class="go">Подробнее о проекте${icon('arrow')}</span></div></div>
       </div></a>`;
   }).join(''));
@@ -228,21 +228,21 @@
       ['Холл', 'Светлый холл и бесшумные лифты', 'Вход по Face ID, смарт-замки с Touch ID и бесшумные лифты: удобно каждый день.', 7, ['Face ID', 'Touch ID', 'Бесшумные лифты']]]
   };
   const UNDER = b => [
-    ZKS_P.includes(b) && ['car', 'Крытый паркинг', 'Тёплое место под домом, лифт до этажа, места под зарядку электромобиля.', 'img/g/card-park.webp', `от ${mln(EX['Parking place'].min)} ₸`, 'extra.html#parking', 'Выбрать место'],
-    ['box', 'Кладовые', 'Место для колясок, шин и сезонных вещей, чтобы в квартире было свободно.', 'img/g/card-store.webp', `от ${area(EX.Storeroom.amin)} м² · от ${mln(EX.Storeroom.min)} ₸`, 'extra.html#store', 'Выбрать кладовую'],
-    ['shop', 'Коммерция на первом этаже', b === 'plaza' ? 'Детский центр, офисы и сервисы прямо в доме.' : 'Кофейня, аптека и сервисы в шаге от подъезда.', 'img/g/card-shop.webp', 'Помещения от 48 м²', 'extra.html#commerce', 'Смотреть помещения']].filter(Boolean);
+    ZKS_P.includes(b) && ['car', 'Крытый паркинг', 'Тёплое место под домом, лифт до этажа, места под зарядку электромобиля.', 'img/g/parking.webp', `от ${mln(EX['Parking place'].min)} ₸`, 'extra.html#parking', 'Выбрать место'],
+    ['box', 'Кладовые', 'Место для колясок, шин и сезонных вещей, чтобы в квартире было свободно.', 'img/g/store.webp', `от ${area(EX.Storeroom.amin)} м² · от ${mln(EX.Storeroom.min)} ₸`, 'extra.html#store', 'Выбрать кладовую'],
+    ['shop', 'Коммерция на первом этаже', b === 'plaza' ? 'Детский центр, офисы и сервисы прямо в доме.' : 'Кофейня, аптека и сервисы в шаге от подъезда.', 'img/g/commerce.webp', 'Помещения от 48 м²', 'extra.html#commerce', 'Смотреть помещения']].filter(Boolean);
   const ZKS_P = ['life', 'eco'];
   const eom = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59); };
   const eow = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate() + (7 - d.getDay()) % 7, 23, 59, 59); };
   const PROMO = b => {
     const ch = FL.filter(f => f.b === b).sort((x, y) => x.p - y.p)[0], n = FL.filter(f => f.b === b).length;
     const L = {
-      inst: { img: 'promo-inst', pc: '#5B21B6', ic: 'wallet', lab: 'Рассрочка', t: 'Рассрочка 0% без банка', p: 'Взнос от 30%, остаток равными платежами до 24 месяцев.', h: 'mortgage.html#inst', until: eom() },
-      full: { img: 'promo-full', pc: '#9A4A00', ic: 'percent', lab: 'Скидка', t: 'До 10% за оплату сразу', p: '3% при 25%, 5% при 50% и 10% при полной оплате.', h: 'mortgage.html#full', until: eom() },
-      hot: { img: 'promo-hot', pc: '#A3135A', ic: 'tag', lab: 'Спеццена недели', t: `${roomsWord(ch.r)} за ${mln(ch.p)} ₸`, p: `${area(ch.a)} м², ${ch.fl} этаж. Цена действует до воскресенья.`, h: `flat.html#flat-${ch.id}`, until: eow() },
-      last: { img: 'promo-last', pc: '#B4380B', ic: 'bell', lab: 'Осталось мало', t: (n === 1 ? 'Последняя квартира' : `Последние ${kv(n)}`), p: 'Дом построен, можно заезжать сразу после сделки.', h: `flats.html#zk-${b}`, left: n },
-      g7: { img: 'promo-7', pc: '#1E3FA8', ic: 'bank', lab: 'Госпрограмма', t: 'Ипотека 7-20-25', p: 'Ставка 7% на весь срок, взнос от 20%, до 25 лет.', h: 'mortgage.html#7' },
-      park: { img: 'promo-park', pc: '#0B6B66', ic: 'car', lab: 'Вместе с квартирой', t: 'Машиноместо к квартире', p: 'Один договор и одна сумма с квартирой.', h: 'extra.html#parking', until: new Date(new Date().getFullYear(), new Date().getMonth() + 2, 0, 23, 59, 59) } };
+      inst: { pc: '#5B21B6', ic: 'wallet', lab: 'Рассрочка', t: 'Рассрочка 0% без банка', p: 'Взнос от 30%, остаток равными платежами до 24 месяцев.', h: 'mortgage.html#inst', until: eom() },
+      full: { pc: '#9A4A00', ic: 'percent', lab: 'Скидка', t: 'До 10% за оплату сразу', p: '3% при 25%, 5% при 50% и 10% при полной оплате.', h: 'mortgage.html#full', until: eom() },
+      hot: { pc: '#A3135A', ic: 'tag', lab: 'Спеццена недели', t: `${roomsWord(ch.r)} за ${mln(ch.p)} ₸`, p: `${area(ch.a)} м², ${ch.fl} этаж. Цена действует до воскресенья.`, h: `flat.html#flat-${ch.id}`, until: eow() },
+      last: { pc: '#B4380B', ic: 'bell', lab: 'Осталось мало', t: (n === 1 ? 'Последняя квартира' : `Последние ${kv(n)}`), p: 'Дом построен, можно заезжать сразу после сделки.', h: `flats.html#zk-${b}`, left: n },
+      g7: { pc: '#1E3FA8', ic: 'bank', lab: 'Госпрограмма', t: 'Ипотека 7-20-25', p: 'Ставка 7% на весь срок, взнос от 20%, до 25 лет.', h: 'mortgage.html#7' },
+      park: { pc: '#0B6B66', ic: 'car', lab: 'Вместе с квартирой', t: 'Машиноместо к квартире', p: 'Один договор и одна сумма с квартирой.', h: 'extra.html#parking', until: new Date(new Date().getFullYear(), new Date().getMonth() + 2, 0, 23, 59, 59) } };
     return { life: ['hot', 'full', 'park'], plaza: ['inst', 'full', 'hot'], eco: ['last', 'g7', 'park'] }[b].map(k => L[k]);
   };
   const VIDS = b => [['yt', `Обзор ${SHORT[b]}: двор, холл и квартиры`, PHOTO[b], 'https://www.youtube.com/results?search_query=' + encodeURIComponent('Baqyt Group ' + SHORT[b])],
@@ -250,12 +250,10 @@
   function landHTML(b) {
     const z = ZK[b], m = META[b], phs = PHS[b];
     return `
-      <nav class="zd-nav" id="zdNav" aria-label="Разделы проекта">${[['zUsp', 'Преимущества'], ['zGal', 'Галерея'], ['zLoc', 'Локация'], ['zPromo', 'Акции'], ['zVid', 'Видео'], ['zBuild', 'Стройка'], ['zchess', 'Квартиры']].map(([id, t], i) => `<a href="#${id}" data-to="${id}" class="${i ? '' : 'on'}">${t}</a>`).join('')}${navBuild(b)}<button class="kb pri sm" data-visit>${icon('cal')}Записаться на показ</button></nav>
+      <nav class="zd-nav" id="zdNav" aria-label="Разделы проекта"><a class="kb nv-back" href="${R.url('zhk.html')}" aria-label="Назад к проектам">${icon('back')}</a><button type="button" class="kb nv-menu" aria-expanded="false" aria-label="Разделы страницы"><span class="nv-cur">Квартиры</span><i class="caret rm"></i></button><div class="nv-list">${[['zCheap', 'Квартиры'], ['zUsp', 'Преимущества'], ['zGal', 'Галерея'], ['zLoc', 'Рядом'], ['zchess', 'По этажам'], ['zUnder', 'Под домом']].map(([id, t], i) => `<a href="#${id}" data-to="${id}" class="${i ? '' : 'on'}">${t}</a>`).join('')}</div>${navBuild(b)}<button class="kb pri sm" data-lead-form="${SHORT[b]}">${icon('send')}Оставить заявку</button></nav>
       <section class="zl-sec" id="zUsp"><div class="sec-h"><div><span class="eyebrow"><i class="rm"></i>Преимущества</span><h2>Почему выбирают ${SHORT[b]}</h2></div><p>${z.benefits.slice(0, 4).join(' · ')}</p></div>
         <div class="usp">${USP[b].map(([e, t, d, n, pts], i) => `<article class="us ${i % 2 ? 'flip' : ''}"><div class="us-pic" data-roof="40" data-roof-m="24"><img src="${ph(b, n)}" alt="${t}" loading="lazy"><span class="us-n num">0${i + 1}</span></div>
-          <div class="us-t"><span class="us-e">${e}</span><h3>${t}</h3><p>${d}</p><div class="us-pts">${pts.map(p => `<span>${icon(K.benefitIcon(p))}${p}</span>`).join('')}</div></div></article>`).join('')}</div>
-        <h3 class="us-h">Под домом и на первом этаже</h3>
-        <div class="under">${UNDER(b).map(([i, t, d, img, pr, h, go]) => `<a class="un" href="${h}"><img src="${img}" alt="" loading="lazy"><span class="un-i">${icon(i)}</span><div><b>${t}</b><p>${d}</p><span class="un-f"><em class="num">${pr}</em><span>${go}${icon('arrow')}</span></span></div></a>`).join('')}</div></section>
+          <div class="us-t"><span class="us-e">${e}</span><h3>${t}</h3><p>${d}</p><div class="us-pts">${pts.map(p => `<span>${icon(K.benefitIcon(p))}${p}</span>`).join('')}</div></div></article>`).join('')}</div></section>
       <section class="zl-sec" id="zGal"><div class="sec-h"><div><span class="eyebrow"><i class="rm"></i>Галерея</span><h2>Фото, рендеры и 3D-тур</h2></div>
           <div class="gtabs" role="tablist"><button type="button" data-g="all" aria-pressed="true">${icon('grid')}Все <b class="num">${GCAT[b].reduce((a, c) => a + c[4].length, 0)}</b></button>${GCAT[b].map(([k, t, ic, , L]) => `<button type="button" data-g="${k}" aria-pressed="false">${icon(ic)}${t} <b class="num">${L.length}</b></button>`).join('')}<button type="button" data-g="rn" aria-pressed="false">${icon('eye')}Рендеры</button><button type="button" data-g="pn" aria-pressed="false">${icon('cube')}360°</button></div></div>
         <div class="gal gall on" data-gp="all">${GCAT[b].map(([k, t, ic, d, L], ci) => `<div class="gc"><div class="gc-h"><span class="gc-n num">0${ci + 1}</span><h3>${icon(ic)}${t}</h3><p>${d}</p><button type="button" class="lnk" data-v="${k}:0" data-icon="arrow">Смотреть ${L.length} фото</button></div><div class="gc-g">${gcatGrid(b, L, k)}</div></div>`).join('')}</div>
@@ -265,12 +263,13 @@
       <section class="zl-sec" id="zLoc"><div class="sec-h"><div><span class="eyebrow"><i class="rm"></i>Локация</span><h2>Всё нужное рядом с домом</h2></div><p>${z.addr} · ${z.area}. Выберите, что важно: ЛРТ, школы, ТРЦ, больницы или парки, и посмотрите, сколько до них ехать.</p></div>
         ${K.nearMap(b, ['lrt', 'edu', 'mall', 'park'])}</section>
       <section class="zl-sec" id="zPromo"><div class="sec-h"><div><span class="eyebrow"><i class="rm"></i>Акции</span><h2>Выгодно в ${SHORT[b]} сейчас</h2></div><div class="zd-pay">${m.pay.map(p => `<a class="tg tg-status" href="mortgage.html#${p === 'inst' ? 'inst' : b === 'eco' ? '7' : 'market'}">${icon(PAYI[p])}${K.PAYN[p]}</a>`).join('')}<a class="tg" href="mortgage.html#full">${icon('key')}Скидки за оплату</a></div></div>
-        <div class="zpr">${PROMO(b).map(x => `<a class="pr pr2" href="${x.h}" style="--pc:${x.pc}"><img src="img/g/${x.img}.webp" alt="" loading="lazy"><span class="lab">${icon(x.ic)}${x.lab}</span>${x.until ? `<span class="pr-tm num" data-until="${+x.until}" data-tip="Срок акции указан для примера">${icon('clock')}<b></b></span>` : x.left ? `<span class="pr-tm hot num">${icon('bell')}<b>Осталось ${x.left}</b></span>` : ''}<h3>${x.t}</h3><p>${x.p}</p><span class="go">Подробнее${icon('arrow')}</span></a>`).join('')}</div></section>
+        <div class="zpr">${PROMO(b).map(x => `<a class="pr pr2" href="${x.h}" style="--pc:${x.pc}"><span class="lab">${icon(x.ic)}${x.lab}</span>${x.until ? `<span class="pr-tm num" data-until="${+x.until}" data-tip="Срок акции указан для примера">${icon('clock')}<b></b></span>` : x.left ? `<span class="pr-tm hot num">${icon('bell')}<b>Осталось ${x.left}</b></span>` : ''}<h3>${x.t}</h3><p>${x.p}</p><span class="go">Подробнее${icon('arrow')}</span></a>`).join('')}</div></section>
       <section class="zl-sec" id="zVid"><div class="sec-h"><div><span class="eyebrow"><i class="rm"></i>Видео</span><h2>Видеообзоры и рилсы</h2></div><p>Прогулка по двору и холлам, вид из окон и ход стройки. Видео откроются в YouTube и Instagram.</p></div>
         <div class="vids">${VIDS(b).map(([k, t, img, h], i) => `<a class="vd ${k} ${i ? '' : 'big'}" href="${h}" target="_blank" rel="noopener"><img src="${img}" alt="" loading="lazy"><span class="vd-s">${icon(k === 'yt' ? 'yt' : 'insta')}${k === 'yt' ? 'YouTube' : 'Reels'}</span><span class="vd-p">${icon('play')}</span><b>${t}</b></a>`).join('')}</div></section>`;
   }
   function mountLand(root) {
     root.querySelectorAll('#zPromo, a[href="#zPromo"]').forEach(el => el.remove()); // неподтверждённые акции (CLAUDE.md)
+    root.querySelectorAll('#zVid, a[href="#zVid"], a[href="#zBuild"]').forEach(el => el.remove()); // 27.11.2026: за «видео» нет настоящих роликов, за «стройкой» — настоящих фото; вернуть, когда появятся
     K.mountNear(root);
     // таймеры акций
     const tick = () => $$('[data-until]', root).forEach(el => { const d = Math.max(0, +el.dataset.until - Date.now()), D = Math.floor(d / 864e5), p2 = n => String(n).padStart(2, '0'); $('b', el).textContent = `${D ? D + ' д ' : ''}${p2(Math.floor(d / 36e5) % 24)}:${p2(Math.floor(d / 6e4) % 60)}:${p2(Math.floor(d / 1e3) % 60)}`; });
@@ -280,7 +279,17 @@
     gt.onclick = e => { const x = e.target.closest('[data-g]'); if (!x) return; $$('[data-g]', gt).forEach(y => y.setAttribute('aria-pressed', y === x)); $$('[data-gp]', root).forEach(p => p.classList.toggle('on', p.dataset.gp === x.dataset.g)); S_.layout && S_.layout(); };
     // навигация по разделам: подсветка текущего
     const nav = $('#zdNav', root), ids = $$('[data-to]', nav).map(a => a.dataset.to);
-    nav.onclick = e => { const a = e.target.closest('[data-to],[data-to-b]'); if (!a) return; e.preventDefault(); const t = document.getElementById(a.dataset.to || 'zBuild'); if (t) scrollTo({ top: t.getBoundingClientRect().top + scrollY - 150, behavior: 'smooth' }); };
+    /* телефон: кнопка с названием текущего раздела открывает список разделов (27.11.2026) */
+    { const nm = $('.nv-menu', nav), cur = $('.nv-cur', nav);
+      if (nm && cur) {
+        const close = () => { nav.classList.remove('open'); nm.setAttribute('aria-expanded', 'false'); };
+        const sync = () => { const on = $('a.on', nav); if (on && cur.textContent !== on.textContent) cur.textContent = on.textContent; };
+        new MutationObserver(sync).observe(nav, { subtree: true, attributes: true, attributeFilter: ['class'] }); sync();
+        nm.addEventListener('click', e => { e.stopPropagation(); const o = nav.classList.toggle('open'); nm.setAttribute('aria-expanded', o); });
+        nav.addEventListener('click', e => { if (e.target.closest('[data-to]')) close(); });
+        document.addEventListener('click', e => { if (!nav.contains(e.target)) close(); });
+      } }
+    nav.onclick = e => { const a = e.target.closest('[data-to],[data-to-b]'); if (!a) return; e.preventDefault(); const t = document.getElementById(a.dataset.to || 'zBuild'); if (t) scrollTo({ top: t.getBoundingClientRect().top + scrollY - 96, behavior: 'smooth' }); };
     const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { $$('[data-to]', nav).forEach(a => a.classList.toggle('on', a.dataset.to === en.target.id)); const on = $('.on', nav); on && nav.scrollTo({ left: on.offsetLeft - 20, behavior: 'smooth' }); } }), { rootMargin: '-40% 0px -55% 0px' });
     ids.forEach(id => { const s = document.getElementById(id); s && io.observe(s); });
     const first = document.getElementById(ids[0]); window.removeEventListener('scroll', window._zs || (() => {})); window._zs = () => { if (first.getBoundingClientRect().top > innerHeight * .45) $$('[data-to]', nav).forEach((a, i) => a.classList.toggle('on', !i)); }; window.addEventListener('scroll', window._zs, { passive: true });
@@ -323,6 +332,65 @@
     document.addEventListener('keydown', key); document.body.append(box); document.documentElement.style.overflow = 'hidden'; show();
   }
   document.addEventListener('click', e => { const g = e.target.closest('[data-v]'); if (!g || !g.closest('#zd')) return; const [c, k] = g.dataset.v.split(':'); viewer(cur, c, +k); });
+  /* «Шторка» — первый экран ЖК на телефоне (28.11.2026): фото листаются пальцем, снизу лист в цвет бренда.
+     Цена в разметке остаётся одной фразой «от 20,3 млн ₸» — её целиком переводит i18n («20,3 млн ₸ бастап»).
+     Крупный вид (цифры большие, остальное мелко) собирается из этой же фразы, поэтому при смене языка ничего не слетает.
+     Название и цена сами ужимаются по ширине экрана и длине текста. */
+  let sheetObs = null;
+  const fitLine = (el, min) => { // уменьшает шрифт, пока строка не поместится; ниже min — разрешает перенос
+    if (!el) return; el.style.fontSize = ''; el.style.whiteSpace = 'nowrap';
+    const box = el.parentElement.clientWidth, w = el.scrollWidth; if (!box || w <= box) return;
+    const k = box / w * .995; if (k >= min) el.style.fontSize = (parseFloat(getComputedStyle(el).fontSize) * k) + 'px'; else el.style.whiteSpace = '';
+  };
+  // ряд фактов на телефоне: все значения одним размером и в одну строку; длинное казахское «2027 ж. 3-тоқсан» уменьшает шрифт всему ряду (не ниже 14 px)
+  const fitFacts = () => {
+    const bs = $$('#zd .zd-facts b'); bs.forEach(e => { e.style.fontSize = ''; e.style.whiteSpace = ''; }); if (!isPhone() || !bs.length) return;
+    bs.forEach(e => { e.style.whiteSpace = 'nowrap'; });
+    const base = parseFloat(getComputedStyle(bs[0]).fontSize), k = Math.min(1, ...bs.map(e => e.parentElement.clientWidth / Math.max(1, e.scrollWidth)));
+    if (k < 1) { const f = Math.max(14, Math.floor(base * k * 10) / 10); bs.forEach(e => { e.style.fontSize = f + 'px'; }); bs.forEach(e => { if (e.scrollWidth > e.parentElement.clientWidth + 1) e.style.whiteSpace = ''; }); }
+  };
+  // адрес с ориентиром всегда в одну строку (слова владелицы 28.11.2026): сначала уменьшается шрифт (до 12 px), потом прячется значок
+  const fitAddr = () => {
+    const p = $('#zd .zd-h .fx-addr'); if (!p) return; p.style.fontSize = ''; p.classList.remove('fx-noicon'); if (!isPhone()) return;
+    const t = p.querySelector('span'); if (!t) return; const over = () => t.scrollWidth > t.clientWidth; // строго: даже доля пикселя даёт многоточие
+    const shrink = () => { for (let f = parseFloat(getComputedStyle(p).fontSize); over() && f > 12; ) { f = Math.max(12, Math.floor((f - .3) * 10) / 10); p.style.fontSize = f + 'px'; } };
+    shrink(); if (over()) { p.classList.add('fx-noicon'); p.style.fontSize = ''; shrink(); }
+  };
+  const fitSheet = () => {
+    const g = $('#zd .zd-gal'), h = $('#zd .zd-h'), nav = $('#zdNav'); if (g) g.style.height = ''; if (h) h.classList.remove('zd-tight');
+    fitFacts();
+    if (!isPhone() || !g || !h || !nav) { fitAddr(); return; }
+    const lines = () => { fitLine($('#zd .zd-name'), .84); fitLine($('#zd .zd-from .zp'), 0); fitAddr(); };
+    // лист с кнопками всегда целиком над закреплённой полосой: сначала становится ниже фото, на совсем коротком экране лист сжимается
+    const over = () => h.getBoundingClientRect().bottom + scrollY - nav.getBoundingClientRect().top;
+    // фото занимает всё, что осталось над листом: первый экран заполнен ровно до нижней полосы (не ниже 130 и не выше 520 px)
+    const trim = () => { g.style.height = ''; g.style.height = Math.min(520, Math.max(130, g.clientHeight - over())) + 'px'; };
+    lines(); trim();
+    if (over() > 1) { h.classList.add('zd-tight'); lines(); trim(); }
+  };
+  function paintPrice() {
+    const src = $('#zd .zd-from b'); if (!src) return;
+    let v = $('#zd .zd-from .zp'); if (!v) { v = document.createElement('span'); v.className = 'zp'; v.setAttribute('aria-hidden', 'true'); v.setAttribute('data-noi18n', ''); src.after(v); }
+    const t = src.textContent.replace(/\s+/g, ' ').trim(), m = t.match(/^(.*?)\s*(\d+(?:[.,]\d+)?)\s*(.*)$/);
+    v.textContent = '';
+    const add = (tag, txt) => { if (!txt) return; const e = document.createElement(tag); e.textContent = txt; v.append(e); };
+    if (m) { add('span', m[1]); add('em', m[2]); add('span', m[3]); } else add('em', t);
+    src.classList.add('zp-src'); fitSheet();
+  }
+  function sheet() {
+    const g = $('#zd .zd-gal'), seg = $('#zd .zd-seg'), src = $('#zd .zd-from b');
+    if (g && seg) {
+      const upd = () => { const k = Math.round(g.scrollLeft / Math.max(1, g.clientWidth)); [...seg.children].forEach((x, j) => x.classList.toggle('on', j === k)); };
+      const build = () => { const n = $$('img', g).length; seg.innerHTML = n > 1 ? '<i></i>'.repeat(n) : ''; upd(); };
+      g.addEventListener('scroll', () => requestAnimationFrame(upd), { passive: true });
+      $$('img', g).forEach(im => im.addEventListener('error', () => { im.remove(); build(); })); // фото не загрузилось — убираем кадр и его полоску
+      build();
+    }
+    if (sheetObs) sheetObs.disconnect();
+    if (src) { paintPrice(); sheetObs = new MutationObserver(paintPrice); sheetObs.observe(src, { characterData: true, childList: true, subtree: true }); }
+  }
+  if (window.ResizeObserver && $('#zd')) new ResizeObserver(() => requestAnimationFrame(fitSheet)).observe($('#zd'));
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitSheet);
   function select(b) {
     if (!ZK[b]) return; cur = b; const z = ZK[b], m = META[b], s = ST[b], st = K.status(b);
     document.title = SHORT[b] + ' · Baqyt'; $('#crumbN').textContent = SHORT[b];
@@ -331,22 +399,24 @@
     const facts = [['star', 'Класс', m.cls], [st.k === 'done' ? 'key' : 'clock', 'Срок', st.t.replace('Сдача: ', '')], ['building', 'Этажей', m.floors + (m.queues ? ', две очереди' : '')], ['door', 'Подъездов', z.ents.length], ['ceil', 'Потолки', m.ceil || 'уточняется'], ['home', 'В продаже', kv(s.n)]];
     const cheap = [1, 2, 3, 4].map(r => FL.filter(f => f.b === b && Math.min(f.r, 4) === r).sort((x, y) => x.p - y.p)[0]).filter(Boolean);
     $('#zd').innerHTML = `
-      <div class="zd-h"><div><div class="zd-tags">${tagHTML(b)}</div><h1 class="zd-name">${SHORT[b]}</h1><p class="fx-addr">${icon('pin')}${z.addr} · ${z.area}</p></div>
-        <div class="zd-cta"><div class="zd-from num"><span>Квартиры от</span><b>${mln(s.min)} ₸</b></div><a class="kb pri" href="flats.html#zk-${b}">${icon('search')}${kv(s.n)}</a><button class="kb" data-visit>${icon('cal')}Показ</button>${m.pano ? `<a class="kb" href="${m.pano}" target="_blank" rel="noopener">${icon('cube')}3D-тур</a>` : ''}</div></div>
-      <div class="zd-gal"><img src="${PHOTO[b]}" alt="${z.name}" data-roof="44" data-roof-m="26">${z.gallery.map(g => `<img src="${g}" alt="" loading="lazy">`).join('')}</div>
+      <div class="zd-h" data-overlap-ok="zd-gal"><div><h1 class="zd-name">${SHORT[b]}</h1><p class="fx-addr">${icon('pin')}<span>${z.addr}<span class="zd-area"> · ${z.area}</span></span></p></div>
+        <div class="zd-cta"><div class="zd-from num"><b>от ${mln(s.min)} ₸</b></div><a class="kb pri" href="flats.html#zk-${b}">${icon('search')}${kv(s.n)}</a>${m.pano ? `<a class="kb" href="${m.pano}" target="_blank" rel="noopener">${icon('cube')}3D-тур</a>` : ''}</div></div>
+      <div class="zd-gal"><img src="${PHOTO[b]}" alt="${z.name}" data-roof="44" data-roof-m="26">${z.gallery.map(g => `<img src="${g}" alt="" loading="lazy">`).join('')}</div><div class="zd-seg" aria-hidden="true"></div>
       <div class="zd-facts">${facts.map(([i, l, v]) => `<div>${icon(i)}<span>${l}</span><b>${v}</b></div>`).join('')}</div>
 ${landHTML(b)}
-      <div class="zd-sec build" id="zBuild"><div class="bl">${buildHTML(b)}</div>
-        <div class="bl"><div class="bl-h"><div><h3>Документы</h3><p>Оригиналы покажем в офисе, копии пришлём в кабинет</p></div></div>
-          <div class="docs">${z.dev ? `<div class="doc"><span class="di">${icon('building')}</span><div><b>Застройщик</b><span>${z.dev}</span></div></div>` : ''}<div class="doc"><span class="di">${icon('doc')}</span><div><b>Разрешение на строительство</b><span>${z.name}</span></div></div><div class="doc"><span class="di">${icon('file')}</span><div><b>Проектная декларация</b><span>Сроки, этажность, площади</span></div></div><div class="doc"><span class="di">${icon('key')}</span><div><b>Договор долевого участия</b><span>Образец можно прочитать до брони</span></div></div></div>
-          <button class="kb" data-call>${icon('phone')}Запросить документы</button></div></div>
+      <!-- ход строительства (проценты, «фото со стройки») скрыт 27.11.2026: настоящих фото и данных о готовности нет. Вернуть: buildHTML(b) -->
+      <div class="zd-sec zd-docs" id="zDocs"><div class="zdoc"><div><h3>Документы проекта</h3><p>${z.dev ? `Застройщик — ${z.dev}. ` : ''}Разрешение на строительство, проектную декларацию и образец договора покажем в офисе продаж.</p></div><button class="kb" data-call>${icon('phone')}Запросить документы</button></div></div>
       <div class="zd-sec" id="zchess"><div class="sec-h"><div><h2>Все квартиры по этажам</h2></div><p>Выберите этаж и окна, которые нравятся: у каждой квартиры есть планировка, цена и расчёт платежа.</p></div>
         <div class="chs-top"><div class="chipset" id="zR">${[[0, 'Все'], [1, '1к'], [2, '2к'], [3, '3к'], [4, '4к+']].map(([r, t]) => `<button aria-pressed="${r === chs.r}" data-r="${r}">${t}</button>`).join('')}</div>
           <div class="chs-leg"><span><i style="background:#EFE7FF"></i>1к</span><span><i style="background:#DCCBFF"></i>2к</span><span><i style="background:#C2A6FA"></i>3к</span><span><i style="background:#A27EF0"></i>4к+</span><span><i style="background:repeating-linear-gradient(135deg,var(--line) 0 3px,transparent 3px 6px)"></i>продана</span></div></div>
         <div class="chs-wrap" id="zChess">${K.chess(b, chs.r)}</div></div>
-      <div class="zd-sec"><div class="sec-h"><div><h2>Самые доступные по комнатности</h2></div><a class="kb" href="flats.html#zk-${b}">${icon('arrow')}${s.n === 1 ? '' : 'Все '}${kv(s.n)}</a></div><div class="grid" id="zFlats">${cheap.map((f, i) => S_.card(f, i)).join('')}</div></div>`;
+      <div class="zd-sec" id="zUnder"><div class="sec-h"><div><h2>Под домом и на первом этаже</h2></div></div>
+        <div class="under">${UNDER(b).map(([i, t, d, img, pr, h, go]) => `<a class="un" href="${h}"><img src="${img}" alt="" loading="lazy"><span class="un-i">${icon(i)}</span><div><b>${t}</b><p>${d}</p><span class="un-f"><em class="num">${pr}</em><span>${go}${icon('arrow')}</span></span></div></a>`).join('')}</div></div>
+      <div class="zd-sec" id="zCheap"><div class="sec-h"><div><h2>Самые доступные по комнатности</h2></div><a class="kb" href="flats.html#zk-${b}">${icon('arrow')}${s.n === 1 ? '' : 'Все '}${kv(s.n)}</a></div><div class="grid" id="zFlats">${cheap.map((f, i) => S_.card(f, i)).join('')}</div></div>`;
     $('#zR').onclick = e => { const x = e.target.closest('[data-r]'); if (!x) return; chs.r = +x.dataset.r; $$('#zR button').forEach(y => y.setAttribute('aria-pressed', +y.dataset.r === chs.r)); $('#zChess').innerHTML = K.chess(cur, chs.r); };
     mountLand($('#zd'));
+    sheet();
+    { const zc = $('#zCheap'), nav = $('#zdNav'); if (zc && nav) nav.after(zc); } // главный товар — сразу после шапки (27.11.2026)
     requestAnimationFrame(() => S_.layout());
   }
   S_.bindChess($('#zd'));

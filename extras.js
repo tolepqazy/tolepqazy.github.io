@@ -38,7 +38,7 @@
   function itemCard(x, type) {
     const m = META[type];
     return `<article class="xc">
-      <div class="xc-pic ${type}"><img src="img/g/card-${{ parking: 'park', store: 'store', commerce: 'shop' }[type]}.webp" alt="" loading="lazy"><b class="num">${x.n}</b><span class="xc-lv">${type === 'commerce' ? icon(x.ic) : icon('layers')}${x.lv}</span></div>
+      <div class="xc-pic ${type}"><b class="num">${x.n}</b><span class="xc-lv">${type === 'commerce' ? icon(x.ic) : icon('layers')}${x.lv}</span></div>
       <div class="xc-b"><div class="xc-z">${SHORT[x.b]}</div><b class="xc-t">${type === 'commerce' ? x.use : m.one[0].toUpperCase() + m.one.slice(1) + ', ' + area(x.a) + ' м²'}</b>
         <div class="xc-p num">${x.p ? fmt(x.p) + ' ₸' : 'Цена по запросу'}</div>
         <div class="xc-f">${type === 'commerce' ? `<span class="tg">${area(x.a)} м²</span>` : ''}${x.f.map(f => `<span class="tg">${f}</span>`).join('')}</div>
@@ -52,7 +52,7 @@
     const st = { zk: 'all', a: [...A], p: PP ? [...PP] : null, sort: 'price', lv: 'any', limit: 12 };
     el.innerHTML = `<div class="xnote">${icon('info')}<span>${m.note}</span></div>
       <div class="xfil">
-        <div><div class="f-l">Жилой комплекс</div><div class="seg" data-f="zk"><span class="thumb"></span>${[['all', 'Все'], ...zks.map(b => [b, SHORT[b]])].map(([v, t]) => `<button type="button" data-v="${v}" aria-pressed="${v === 'all'}">${t}</button>`).join('')}</div></div>
+        <div><div class="f-l">Жилой комплекс</div>${zks.length > 3 ? `<select class="sort segsel" data-f="zk" aria-label="Жилой комплекс">${[['all', 'Все'], ...zks.map(b => [b, SHORT[b]])].map(([v, t]) => `<option value="${v}">${t}</option>`).join('')}</select>` : `<div class="seg" data-f="zk"><span class="thumb"></span>${[['all', 'Все'], ...zks.map(b => [b, SHORT[b].replace('Alatau ', '')])].map(([v, t]) => `<button type="button" data-v="${v}" aria-pressed="${v === 'all'}">${t}</button>`).join('')}</div>`}</div>
         <div><div class="f-l">Площадь, м² <b class="num" data-o="a"></b></div><div class="range" data-r="a"></div></div>
         ${PP ? `<div><div class="f-l">Цена, млн ₸ <b class="num" data-o="p"></b></div><div class="range" data-r="p"></div></div>` : ''}
         ${type !== 'commerce' && new Set(L.map(x => x.lv).filter(Boolean)).size > 1 ? `<div><div class="f-l">Уровень</div><div class="seg" data-f="lv"><span class="thumb"></span>${[['any', 'Любой'], ...[...new Set(L.map(x => x.lv))].map(v => [v, v])].map(([v, t]) => `<button type="button" data-v="${v}" aria-pressed="${v === 'any'}">${t}</button>`).join('')}</div></div>` : ''}
@@ -62,6 +62,7 @@
     const $ = s => el.querySelector(s), $$ = s => [...el.querySelectorAll(s)];
     const thumb = seg => { const b = seg.querySelector('[aria-pressed="true"]'), t = seg.querySelector('.thumb'); if (b && t && b.offsetWidth) { t.style.left = b.offsetLeft + 'px'; t.style.width = b.offsetWidth + 'px'; } };
     $$('.seg[data-f]').forEach(seg => seg.addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; st[seg.dataset.f] = b.dataset.v; $$('button', seg).forEach(x => x.setAttribute('aria-pressed', x === b)); thumb(seg); st.limit = 12; render(); }));
+    $$('select.segsel[data-f]').forEach(sel => sel.addEventListener('change', () => { st[sel.dataset.f] = sel.value; st.limit = 12; render(); })); // много ЖК — выпадающий список (27.11.2026)
     function dual(r, key, [lo, hi], step, fm) {
       r.innerHTML = `<div class="track"><div class="fill"></div></div><input type="range" min="${lo}" max="${hi}" step="${step}" value="${lo}" aria-label="от"><input type="range" min="${lo}" max="${hi}" step="${step}" value="${hi}" aria-label="до">`;
       const [a, b] = r.querySelectorAll('input'), fill = r.querySelector('.fill'), out = $(`[data-o="${key}"]`);
@@ -81,7 +82,7 @@
       const left = R.length - Math.min(R.length, st.limit); $('[data-more]').hidden = left <= 0; $('[data-more] span').textContent = `Показать ещё ${Math.min(12, left)} из ${left}`;
     }
     render(); S_.onLayout(() => $$('.seg[data-f]').forEach(thumb));
-    return { render, setZk: b => { const btn = el.querySelector(`.seg[data-f="zk"] [data-v="${b}"]`); if (btn) btn.click(); } };
+    return { render, setZk: b => { const sel = el.querySelector('select.segsel[data-f="zk"]'); if (sel) { sel.value = b; sel.dispatchEvent(new Event('change')); return; } const btn = el.querySelector(`.seg[data-f="zk"] [data-v="${b}"]`); if (btn) btn.click(); } };
   }
   window.BQE = { mount, META, DATA, count: t => t === 'commerce' ? null : META[t].total };
 })();

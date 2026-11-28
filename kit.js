@@ -113,7 +113,7 @@
     if (q.zk && f.b !== q.zk) return false;
     if (q.rooms && q.rooms.length && !q.rooms.includes(Math.min(f.r, 4))) return false;
     if (q.priceMax && f.p > q.priceMax * 1e6) return false;
-    if (q.monthMax && monthly(f.p) > q.monthMax) return false;
+    if (q.monthMax && monthly(f.p, f.b) > q.monthMax) return false;
     if (q.areaMin && f.a < q.areaMin) return false;
     if (q.notFirst && f.fl <= 2) return false;
     if (q.floorMin && f.fl < q.floorMin) return false;
@@ -137,12 +137,12 @@
     if (/адрес|где наход|где этот/.test(t)) return { text: ORDER.map(b => `${ZK[b].name}: ${sp(ZK[b].addr)}, ${sp(ZK[b].area)}`).join('. ') + '.' };
     const { q, got } = parse(text);
     let L = FL.filter(f => match(f, q)); sortBy(L, q.sort);
-    if (!got.length) return { text: sp('Не понял, что искать. Напишите комнаты, бюджет или что должно быть рядом.') + ' ' + sp('Например: «3 комнаты, платёж до 250 000, рядом школа».'), got };
+    if (!got.length) return { text: sp('Не понял, что искать. Напишите комнаты, бюджет или что должно быть рядом.') + ' ' + sp('Например: «3 комнаты, платёж до 500 000, рядом школа».'), got };
     if (!L.length) return { text: gotS(got) + ' ' + sp('Таких квартир сейчас нет.') + ' ' + sp('Попробуйте поднять бюджет или убрать одно условие.'), got, q };
     const by = ORDER.filter(b => L.some(f => f.b === b)).map(b => `${SHORT[b]} — ${L.filter(f => f.b === b).length}`).join(', ');
     // в карточках — разные планировки: одинаковые квартиры с соседних этажей не повторяем
     const pl = new Set(), show = L.filter(f => { const k = f.b + f.r + "-" + f.a; return !pl.has(k) && pl.add(k); }).slice(0, q.n || 3);
-    const top = q.sort === 'm2' ? `Самая низкая цена за м² — ${fmt(L[0].m2)} ₸ (${mln(L[0].p)} ₸ за квартиру).` : `Самая доступная — ${mln(L[0].p)} ₸, ${fmt(monthly(L[0].p))} ₸ в месяц.`;
+    const top = q.sort === 'm2' ? `Самая низкая цена за м² — ${fmt(L[0].m2)} ₸ (${mln(L[0].p)} ₸ за квартиру).` : `Самая доступная — ${mln(L[0].p)} ₸, ${fmt(monthly(L[0].p, L[0].b))} ₸ в месяц.`;
     return { text: `${gotS(got)} ${sp('Подходящих квартир: ' + L.length)} (${by}). ${sp(top)}`, got, q, flats: show, n: L.length };
   }
 
@@ -255,12 +255,12 @@
       <div class="pc3-c ${hasI ? '' : 'off'}" data-pc="inst"><div class="pc3-h"><span class="pc3-i">${icon('calc')}</span><div><b>Рассрочка</b><small>от застройщика, без банка</small></div></div>
         ${hasI ? `<p class="pc3-n">Взнос, срок и график рассрочки менеджер рассчитает под эту квартиру.</p>
         <ul class="pc3-ul"><li>${icon('check')}Без справок о доходе</li><li>${icon('check')}Без банковских процентов</li></ul>
-        <button class="kb pri" data-fx-book>${icon('key')}Оформить рассрочку</button>`
+        <button class="kb" data-fx-book>${icon('key')}Оформить рассрочку</button>`
         : `<div class="pc3-no">${icon('info')}<p>В ${SHORT[f.b]} рассрочки нет. Она доступна в ${inst.zk.map(b => SHORT[b]).join(', ')}.</p><a class="kb" href="flats.html#zk-${inst.zk[0]}">${icon('search')}Квартиры с рассрочкой</a></div>
         <ul class="pc3-ul"><li>${icon('check')}Без справок о доходе</li><li>${icon('check')}Без банковских процентов</li></ul>`}</div>
       <div class="pc3-c dark" data-pc="full"><div class="pc3-h"><span class="pc3-i">${icon('wallet')}</span><div><b>Наличными</b><small>скидка за оплату</small></div></div>
         <p class="pc3-n">Чем больше вносите сразу, тем больше скидка. Размер скидки для этой квартиры назовёт менеджер.</p>
-        <button class="kb pri" data-call>${icon('phone')}Узнать скидку</button></div>
+        <button class="kb" data-call>${icon('phone')}Узнать скидку</button></div>
     </div>`;
   }
   /* о жилом комплексе: фото во вкладках */
@@ -304,33 +304,33 @@
           <div class="fx-pane" data-pane="house">${entranceGrid(f)}</div>
         </div>
         <div class="fx-side">
-          <div class="fx-tags">${tags(f.b).map(t => `<span class="tg tg-${t.k}">${icon(t.i)}${t.t}</span>`).join('')}</div>
           <h1>${roomsWord(f.r)}, ${area(f.a)} м²</h1>
+          <dl class="fx-key"><div><dt>Этаж</dt><dd class="num">${f.fl}${fls ? ' из ' + fls : ''}</dd></div><div><dt>Подъезд</dt><dd class="num">${f.e}</dd></div><div><dt>Квартира</dt><dd class="num">№ ${f.n}</dd></div></dl>
           <p class="fx-addr">${icon('pin')}${z.name} · ${z.addr} · ${z.area}</p>
+          <div class="fx-tags">${tags(f.b).map(t => `<span class="tg tg-${t.k}">${icon(t.i)}${t.t}</span>`).join('')}</div>
           <div class="fx-price"><b class="num">${fmt(f.p)} ₸</b><span class="num">${fmt(f.m2)} ₸ за м²</span>
             ${d <= -1 ? `<em class="good">${icon('tag')}На ${-d}% дешевле средней цены за м² в ${SHORT[f.b]}</em>` : d >= 1 ? `<em>${icon('info')}Цена за м² выше средней по ${SHORT[f.b]} на ${d}%: высокий этаж или удачная планировка</em>` : `<em>${icon('info')}Средняя цена за м² по ${SHORT[f.b]}</em>`}</div>
-          <div class="fx-month"><span>${icon('bank')}Ипотека</span><b class="num" data-fx-m>${fmt(monthly(f.p))} ₸/мес</b><button class="lnk" data-fx-calc>Изменить расчёт</button></div>
+          <div class="fx-month"><span>${icon('bank')}Ипотека</span><b class="num" data-fx-m>${fmt(monthly(f.p, f.b))} ₸/мес</b><button class="lnk" data-fx-calc>Изменить расчёт</button></div>
           <div class="fx-acts">
             <button class="kb pri" data-fx-book>${icon('key')}Забронировать</button>
             <button class="kb" data-fx-visit>${icon('cal')}Записаться на показ</button>
-            <button class="kb" data-fx-family>${icon('users')}Обсудить с семьёй</button>
             <div class="fx-mini">
-              <button class="kb ic" data-fx-fav aria-pressed="${!!favOn}" title="В избранное">${icon('heart')}</button>
-              <button class="kb ic" data-fx-cmp aria-pressed="${cmp.has(f.id)}" title="Сравнить">${icon('compare')}</button>
-              <button class="kb ic" data-fx-share title="Поделиться">${icon('share')}</button>
-              <button class="kb ic" data-fx-pdf title="PDF-буклет">${icon('file')}</button>
+              <button class="kb" data-fx-fav aria-pressed="${!!favOn}">${icon('heart')}<span>В избранное</span></button>
+              <button class="kb" data-fx-cmp aria-pressed="${cmp.has(f.id)}">${icon('compare')}<span>Сравнить</span></button>
+              <button class="kb" data-fx-share>${icon('share')}<span>Поделиться</span></button>
             </div>
           </div>
           <div class="fx-mgr">${icon('phone')}<div><b>Отдел продаж</b><span>+7 700 800 00 16 · Пн–Сб 10–20, Вс 11–16</span></div><a class="kb sm" href="https://wa.me/77008000016?text=${encodeURIComponent(`Здравствуйте! Интересует ${roomsWord(f.r)} ${area(f.a)} м², кв. ${f.n} в ${z.name}`)}" target="_blank" rel="noopener">${icon('wa')}WhatsApp</a></div>
         </div>
       </div>
-      <section class="fx-sec fx-two"><div class="fx-list"><h2>Главное о квартире</h2><dl class="fx-dl">${facts.map(([i, l, v]) => `<div>${icon(i)}<dt>${l}</dt><dd>${v}</dd></div>`).join('')}</dl>
-        <div class="fx-hint">${icon('layers')}Такая планировка ${same > 1 ? `ещё в ${kv(same - 1)} этого ЖК, на разных этажах` : 'одна в продаже'}.</div></div>
-        <div class="fx-nm"><h2>Что рядом с домом</h2>${nearMap(f.b)}</div></section>
       <section class="fx-sec" id="fxCalc"><h2>Сколько платить</h2><p class="fx-sub">Сравните три способа покупки: платёж, сумму сразу и выгоду.</p>${payCards(f)}</section>
+      <section class="fx-sec fx-two"><div class="fx-list"><h2>Главное о квартире</h2><dl class="fx-dl">${facts.map(([i, l, v]) => `<div>${icon(i)}<dt>${l}</dt><dd>${v}</dd></div>`).join('')}</dl>
+        <div class="fx-hint">${icon('layers')}Такая планировка ${same > 1 ? `ещё в ${same - 1} ${plural(same - 1, 'квартире', 'квартирах', 'квартирах')} этого ЖК, на разных этажах` : 'одна в продаже'}.</div></div>
+        <div class="fx-nm"><h2>Что рядом с домом</h2>${nearMap(f.b)}</div></section>
       ${zkTabs(f)}
       ${houseCut(f)}
       ${sim.length ? `<section class="fx-sec"><h2>Похожие квартиры</h2><div class="fx-sim">${sim.map(x => `<a class="fx-s" data-flat="${x.id}" href="${R.url('flat.html#flat-' + x.id)}" style="text-decoration:none"><img src="${x.pl}" alt="" loading="lazy"><b>${roomsWord(x.r)}, ${area(x.a)} м²</b><span>${SHORT[x.b]} · ${x.fl} этаж</span><em class="num">${mln(x.p)} ₸</em></a>`).join('')}</div></section>` : ''}
+      <div class="fx-stick" id="fxStick"><div class="fx-stick-in"><div class="fx-stick-p"><b class="num">${fmt(f.p)} ₸</b><span><i>${roomsWord(f.r)} · </i>${area(f.a)} м² · ${f.fl} этаж</span></div><a class="kb ic" href="tel:+77008000016" aria-label="Позвонить в отдел продаж">${icon('phone')}</a><button class="kb pri" data-fx-book>${icon('key')}Забронировать</button></div></div>
     </div>`;
   }
   /* ---------- память посетителя: сравнение и просмотренные (только в этом браузере) ---------- */
@@ -344,7 +344,7 @@
     if (L.length < 2) { modal(`<div class="km-ic">${icon('compare')}</div><h3>Сравнение квартир</h3><p>Добавьте хотя бы две квартиры: кнопка ${icon('compare')} есть на карточке и на странице квартиры.</p><button class="kb pri" data-km-x>Понятно</button>`); return; }
     const best = (fn, dir) => { const v = L.map(fn); const b = dir > 0 ? Math.max(...v) : Math.min(...v); return v.map(x => x === b && v.some(y => y !== b)); };
     const R = [
-      ['Цена', f => f.p, f => fmt(f.p) + ' ₸', -1], ['За м²', f => f.m2, f => fmt(f.m2) + ' ₸', -1], ['Платёж в месяц', f => monthly(f.p), f => fmt(monthly(f.p)) + ' ₸', -1],
+      ['Цена', f => f.p, f => fmt(f.p) + ' ₸', -1], ['За м²', f => f.m2, f => fmt(f.m2) + ' ₸', -1], ['Платёж в месяц', f => monthly(f.p, f.b), f => fmt(monthly(f.p, f.b)) + ' ₸', -1],
       ['Площадь', f => f.a, f => area(f.a) + ' м²', 1], ['Комнат', f => f.r, f => f.r, 0], ['Этаж', f => f.fl, f => f.fl + (floorsOf(f) ? ' из ' + floorsOf(f) : ''), 0],
       ['Срок', f => 0, f => status(f.b).t.replace('Сдача: ', ''), 0], ['Класс', f => 0, f => META[f.b].cls, 0], ['Потолки', f => 0, f => META[f.b].ceil || '—', 0],
       ['Покупка', f => 0, f => ['full', ...META[f.b].pay].map(x => PAYN[x]).join(', '), 0], ['Цена к средней', f => delta(f), f => (delta(f) > 0 ? '+' : '') + delta(f) + '%', -1]];
@@ -396,6 +396,9 @@
       $('[data-o="md"]').textContent = `${d}% · ${mln(D)} ₸`; $('[data-o="my"]').textContent = `${y} ${plural(y, 'год', 'года', 'лет')}`;
       $('[data-o="mn"]').textContent = pg.note; $('[data-fx-m]').textContent = fmt(Math.round(M / 100) * 100) + ' ₸/мес'; [rd, ry].forEach(setP);
     };
+    /* липкая полоса появляется, когда главная кнопка ушла с экрана (на телефоне видна всегда — см. pages.css) */
+    const stick = $('#fxStick'), mainBook = $('.fx-acts [data-fx-book]');
+    if (stick && mainBook && 'IntersectionObserver' in window) new IntersectionObserver(es => stick.classList.toggle('on', !es[0].isIntersecting)).observe(mainBook);
     rd.oninput = ry.oninput = mort; $$('[data-pg]').forEach(b => b.onclick = () => setProg(mp.find(g => g.k === b.dataset.pg))); setProg(pg);
     /* рассрочка */
     const ri = $('[data-r="id"]'), rm = $('[data-r="iy"]');
@@ -424,7 +427,7 @@
       if (t.closest('[data-fx-family]')) return api.family(f);
       if (t.closest('[data-fx-fav]')) { api.fav(f.id); $('[data-fx-fav]').setAttribute('aria-pressed', api.isFav(f.id)); return; }
       if (t.closest('[data-fx-cmp]')) { const on = cmpToggle(f.id); $('[data-fx-cmp]').setAttribute('aria-pressed', on); api.toast(on ? 'Добавили к сравнению' : 'Убрали из сравнения'); return; }
-      if (t.closest('[data-fx-share]')) { const s = `${z(f)} — ${roomsWord(f.r)}, ${area(f.a)} м², ${mln(f.p)} ₸`; (navigator.clipboard ? navigator.clipboard.writeText(s) : Promise.reject()).then(() => api.toast('Описание квартиры скопировано'), () => api.toast(s)); return; }
+      if (t.closest('[data-fx-share]')) { const s = `${z(f)} — ${roomsWord(f.r)}, ${area(f.a)} м², ${mln(f.p)} ₸`; (navigator.clipboard ? navigator.clipboard.writeText(s + ' ' + location.href) : Promise.reject()).then(() => api.toast('Ссылка на квартиру скопирована'), () => api.toast(location.href)); return; }
       if (t.closest('[data-fx-pdf]')) return api.toast('На сайте здесь скачается PDF: планировка, цена, расчёт ипотеки. В прототипе это недоступно');
     };
     const z = x => ZK[x.b].name;
@@ -455,10 +458,10 @@
     // формы сами ставят .bad при отправке — подсказка появляется вместе с рамкой
     new MutationObserver(() => show(inp.classList.contains('bad'))).observe(inp, { attributes: true, attributeFilter: ['class'] });
   }
-  function form(kind, f) {
-    const T = { book: ['Бронирование квартиры', 'Менеджер позвонит, подтвердит бронь и расскажет, какие документы нужны.', 'key', 'Забронировать'], visit: ['Запись на показ', 'Покажем дом, двор и шоурум. Выберите удобный день.', 'cal', 'Записаться'], call: ['Заказать звонок', 'Перезвоним в рабочее время: Пн–Сб 10–20, Вс 11–16.', 'phone', 'Жду звонка'] }[kind];
+  function form(kind, f, note) {
+    const T = { lead: ['Оставить заявку', 'Менеджер перезвонит в рабочее время, ответит на вопросы и подберёт квартиру.', 'send', 'Отправить заявку'], book: ['Бронирование квартиры', 'Менеджер позвонит, подтвердит бронь и расскажет, какие документы нужны.', 'key', 'Забронировать'], visit: ['Запись на показ', 'Покажем дом, двор и шоурум. Выберите удобный день.', 'cal', 'Записаться'], call: ['Заказать звонок', 'Перезвоним в рабочее время: Пн–Сб 10–20, Вс 11–16.', 'phone', 'Жду звонка'] }[kind];
     const days = kind === 'visit' ? (() => { const out = []; const d = new Date(); for (let i = 1; out.length < 5; i++) { const x = new Date(d.getTime() + i * 864e5); out.push(x); } return `<div class="km-days">${out.map((x, i) => `<button type="button" aria-pressed="${!i}">${['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'][x.getDay()]}<b>${x.getDate()}</b></button>`).join('')}</div>`; })() : '';
-    const m = modal(`<div class="km-ic">${icon(T[2])}</div><h3>${T[0]}</h3><p>${f ? `${ZK[f.b].name}, кв. ${f.n} · ${roomsWord(f.r)}, ${area(f.a)} м² · ${mln(f.p)} ₸<br>` : ''}${T[1]}</p>${days}
+    const m = modal(`<div class="km-ic">${icon(T[2])}</div><h3>${T[0]}</h3><p>${f ? `${ZK[f.b].name}, кв. ${f.n} · ${roomsWord(f.r)}, ${area(f.a)} м² · ${mln(f.p)} ₸<br>` : note ? `<b>${note}</b><br>` : ''}${T[1]}</p>${days}
       <form class="km-f" novalidate><input placeholder="Имя" aria-label="Имя"><input placeholder="+7 7__ ___ __ __" inputmode="tel" aria-label="Телефон" class="ph"><button class="kb pri" type="submit">${icon(T[2])}${T[3]}</button><small>В прототипе заявка никуда не отправляется. На сайте она уйдёт в CRM.</small></form>`);
     phoneMask(m.querySelector('.ph'));
     m.querySelectorAll('.km-days button').forEach(b => b.onclick = () => m.querySelectorAll('.km-days button').forEach(x => x.setAttribute('aria-pressed', x === b)));
@@ -471,6 +474,16 @@
       <div class="km-votes"><span class="av">Вы</span><span class="av add">+</span><em>Пригласите, чтобы увидеть их голоса</em></div></div>
       <a class="kb pri" href="${link}" target="_blank" rel="noopener">${icon('wa')}Отправить в WhatsApp</a><button class="kb" data-km-cab>${icon('user')}Открыть семейный кабинет</button>
       <small class="km-s">Пример экрана. Голосование и чат работают в личном кабинете после входа.</small>`).querySelector('[data-km-cab]').onclick = () => cabinet();
+  }
+  /* избранное: простой список сохранённых квартир, без входа (27.11.2026 — раньше открывалось окно кабинета, которого нет) */
+  function favs(ids, api) {
+    const L = FL.filter(f => ids.includes(f.id));
+    if (!L.length) { closeModal(); return; }
+    const m = modal(`<div class="km-ic">${icon('heart')}</div><h3>Избранное</h3><p>Список хранится в этом браузере. Нажмите на квартиру, чтобы открыть её.</p>
+      <div class="kfav">${L.map(f => `<div class="kfav-r"><button type="button" class="kfav-o" data-flat="${f.id}"><i class="kc-pic"><img src="${f.pl}" alt=""></i><span><b>${roomsWord(f.r)}, ${area(f.a)} м²</b>${SHORT[f.b]} · ${f.fl} этаж · ${mln(f.p)} ₸</span></button><button type="button" class="kb ic" data-unfav="${f.id}" aria-label="Убрать из избранного">${icon('close')}</button></div>`).join('')}</div>`, 'wide');
+    m.querySelectorAll('.kc-pic img').forEach(fitPlan);
+    m.querySelectorAll('[data-flat]').forEach(b => b.onclick = () => { closeModal(); api.open(+b.dataset.flat); });
+    m.querySelectorAll('[data-unfav]').forEach(b => b.onclick = () => { api.toggle(+b.dataset.unfav); favs(api.ids(), api); });
   }
   function cabinet(favIds = []) {
     const fav = FL.filter(f => favIds.includes(f.id)).slice(0, 3);
@@ -552,5 +565,5 @@
     inst: ['Платите застройщику частями, без банка, справок о доходе и переплаты банку.', 'Есть в Alatau Plaza Residence. Срок и взнос подбирает менеджер под конкретную квартиру.', 'Взнос, срок и график менеджер рассчитает под конкретную квартиру.'],
     full: ['Чем больше вносите сразу, тем больше скидка: она действует при оплате 25%, 50% или 100% стоимости.', 'Оставшуюся часть можно закрыть ипотекой или рассрочкой.', 'Размер скидки для каждого варианта называет менеджер: на сайте его пока нет.'] };
   const pFacts = g => g.bank ? [['percent', `Ставка ${g.rl}, потом 10%`], ['wallet', 'Взнос 30% — на депозит под 7%'], ['clock', `Срок ${g.yl}`]] : g.ask ? [['wallet', g.full ? 'Скидка за оплату сразу' : 'Без банка'], ['user', 'Условия рассчитает менеджер'], ['phone', 'Расчёт по звонку']] : g.full ? [['tag', 'Скидка при 25%'], ['tag', 'Скидка при 50%'], ['tag', 'Больше всего при 100%']] : [['percent', `Ставка ${g.rate}%${g.fixed ? ', фиксированная' : ''}`], ['wallet', `Взнос от ${g.d[0]}%`], ['clock', `Срок до ${g.y[1]} ${g.u === 'm' ? 'мес.' : 'лет'}`]];
-  window.BQK = { GEO: { CATS, LM, hav, carMin }, nearMap, mountNear, PROGS, PIMG, PMORE, pFacts, cmp, cmpL, cmpToggle, compare, chess, seen, alertForm, FAQ, store, ORDER, SHORT, META, PAYN, ST, icon, ROOF, P, tags, status, delta, avgM2, samePlan, floorsOf, rName, kv, nearMin, NEARN, annuity, parse, match, answer, mountFlat, modal, closeModal, form, family, cabinet, chat, benefitIcon, placeIcon, phoneMask };
+  window.BQK = { GEO: { CATS, LM, hav, carMin }, favs, nearMap, mountNear, PROGS, PIMG, PMORE, pFacts, cmp, cmpL, cmpToggle, compare, chess, seen, alertForm, FAQ, store, ORDER, SHORT, META, PAYN, ST, icon, ROOF, P, tags, status, delta, avgM2, samePlan, floorsOf, rName, kv, nearMin, NEARN, annuity, parse, match, answer, mountFlat, modal, closeModal, form, family, cabinet, chat, benefitIcon, placeIcon, phoneMask };
 })();

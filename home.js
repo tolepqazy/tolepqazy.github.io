@@ -24,19 +24,20 @@
 
   /* истории */
   const S = [
-    { who: 'Alatau Life', hot: 1, img: PHOTO.life, th: PHOTO.life, lab: [K.status('life').sub ? 'Сдача через ' + K.status('life').sub.replace('через ', '') : K.status('life').t, 'clock'], h: 'Сдача в 3 квартале 2027. Выбирайте этаж, пока есть', p: `${kv(ST.life.n)} в продаже, от ${mln(ST.life.min)} ₸. Потолки 3 метра, Face ID, закрытый двор.`, cta: [['Квартиры Life', 'flats.html#zk-life', 'pri', 'arrow'], ['О комплексе', 'project.html#life']] },
+    { who: 'Alatau Life', hot: 1, img: PHOTO.life, th: PHOTO.life, lab: [K.META.life.cls, 'star'], h: 'Сдача в 3 квартале 2027. Выбирайте этаж, пока есть', p: `${kv(ST.life.n)} в продаже, от ${mln(ST.life.min)} ₸. Потолки 3 метра, Face ID, закрытый двор.`, cta: [['Квартиры Life', 'flats.html#zk-life', 'pri', 'arrow'], ['О комплексе', 'project.html#life']] },
     { who: 'Alatau Plaza Residence', short: 'Plaza Residence', img: 'img/ph_5655382_0.webp', th: PHOTO.plaza, lab: ['Рассрочка', 'wallet'], h: 'Рассрочка от застройщика, без банка', p: `${kv(ST.plaza.n)} в продаже, от ${mln(ST.plaza.min)} ₸. Две очереди, класс бизнес, кинорум и детская.`, cta: [['Квартиры в рассрочку', 'flats.html#zk-plaza', 'pri', 'arrow'], ['Посчитать', './#prog-inst']] },
     { who: 'Eco Park', hot: 1, img: 'img/ph_5587279_3.webp', th: PHOTO.eco, lab: [(ST.eco.n === 1 ? 'Последняя квартира' : `Осталось ${kv(ST.eco.n)}`), 'bell', 'hot'], h: ST.eco.n === 1 ? 'Дом построен. Последняя квартира' : 'Дом построен. Последние квартиры', p: `От ${mln(ST.eco.min)} ₸. Ипотека по программе 7-20-25. Можно въехать без ожидания стройки.`, cta: [['Успеть посмотреть', 'flats.html#zk-eco', 'pri', 'arrow'], ['Записаться на показ', '#visit']] },
     { who: 'Выгодно', hot: 1, ic: 'tag', img: 'img/g/deals.webp', lab: ['Считает сайт', 'spark'], h: `${kv(DEAL.length)} дешевле средней цены за м²`, p: 'Сайт сам сравнивает каждую квартиру со средней ценой за м² в её ЖК и комнатности. Список обновляется вместе с ценами.', cta: [['Показать выгодные', 'flats.html#deal', 'pri', 'arrow']] },
     { who: 'Ипотека', ic: 'percent', img: 'img/g/mortgage-family.webp', lab: ['7-20-25', 'bank'], h: 'Ипотека 7%: взнос от 20%, до 25 лет', p: 'Госпрограмма для новостроек. Посчитайте платёж и сравните с ипотекой банка, Отбасы и рассрочкой.', cta: [['Посчитать платёж', './#prog-7', 'pri', 'calc']] },
-    { who: 'Стройка', ic: 'hammer', img: 'img/ph_6839859_1.webp', lab: ['Ход строительства', 'cam'], h: 'Alatau Life растёт каждый месяц', p: 'Фото со стройки и этапы готовности. На сайте менеджер загружает новые фото каждый месяц.', cta: [['Смотреть ход стройки', 'about.html#build', 'pri', 'arrow']] },
     { who: 'Паркинг', ic: 'car', img: 'img/g/parking.webp', lab: [`${EX['Parking place'].n} мест`, 'car'], h: `Машиноместо от ${mln(EX['Parking place'].min)} ₸`, p: `Тёплый подземный паркинг, ${area(EX['Parking place'].amin)}–${area(EX['Parking place'].amax)} м². Можно купить вместе с квартирой.`, cta: [['Выбрать место', 'extra.html#parking', 'pri', 'arrow']] },
     { who: 'Кладовые', ic: 'box', img: 'img/g/store.webp', lab: [`${EX.Storeroom.n} кладовых`, 'box'], h: `Кладовая от ${fmt(EX.Storeroom.min)} ₸`, p: `${area(EX.Storeroom.amin)}–${area(EX.Storeroom.amax)} м² для колясок, шин и сезонных вещей.`, cta: [['Выбрать кладовую', 'extra.html#store', 'pri', 'arrow']] },
-    { who: 'Семья', ic: 'users', img: 'img/g/family-cabinet.webp', lab: ['Кабинет', 'users'], h: 'Выбирайте квартиру всей семьёй', p: 'Добавьте близких в кабинет: общий список, голосование и чат под каждой квартирой.', cta: [['Как это работает', 'about.html#family', 'pri', 'arrow']] },
     { who: 'Квиз', ic: 'quiz', img: 'img/g/quiz.webp', lab: ['6 вопросов', 'quiz'], h: 'Не знаете, с чего начать? Ответьте на 6 вопросов', p: 'Квиз сам настроит фильтр: комнаты, бюджет, сроки и что важно рядом. Сразу видно, сколько квартир подходит.', cta: [['Начать квиз', 'flats.html#quiz', 'pri', 'arrow']] },
     { who: 'Шахматка', ic: 'grid', img: 'img/g/chess.webp', lab: ['Все этажи', 'grid'], h: 'Каждая квартира на своём этаже', p: `${kv(FL.length)} в продаже. Наведите на ячейку: покажем планировку, цену и платёж в месяц.`, cta: [['Открыть шахматку', 'flats.html#chess', 'pri', 'arrow']] },
     { who: 'Карта', ic: 'map', img: 'img/g/map.webp', lab: ['Сколько ехать', 'map'], h: 'Сколько ехать до работы, школы и центра', p: 'Поставьте свою точку на карте: покажем расстояние до каждого ЖК и время на машине.', cta: [['Открыть карту', 'zhk.html#map', 'pri', 'arrow']] },
     { who: 'Бизнес', ic: 'shop', img: 'img/g/commerce.webp', lab: ['1 этаж', 'shop'], h: 'Помещения для бизнеса на первых этажах', p: 'Кофейня, аптека или офис рядом с жильцами. Отдельный вход с улицы.', cta: [['Смотреть помещения', 'extra.html#commerce', 'pri', 'arrow']] }];
+  /* 27.11.2026: в ряду остаются три ЖК, выгодные квартиры и ипотека; паркинг, кладовые, квиз, шахматка, карта и коммерция есть в меню */
+  const KEEP = ['Alatau Life', 'Alatau Plaza Residence', 'Eco Park', 'Выгодно', 'Ипотека'];
+  for (let i = S.length - 1; i >= 0; i--) if (!KEEP.includes(S[i].who)) S.splice(i, 1);
   S.sort((a, b) => (b.hot || 0) - (a.hot || 0));
   let si = 0, paused = false, timer; const seen = new Set();
   const stoB = (s, i) => `<button class="sto${s.hot ? ' hot' : ''}" role="tab" data-s="${i}"><span class="hs"><div>${(s.th || s.img) ? `<img src="${s.th || s.img}" alt="">` : `<span class="ic">${icon(s.ic)}</span>`}</div></span><span class="sto-t">${s.short || s.who}</span></button>`;
@@ -78,7 +79,8 @@
   setPause(false); show(0); S_.onLayout(roundSto); roundSto();
 
   /* главный блок: сразу ИИ или сразу квиз */
-  const EXS = ['Двушка до 30 млн', 'Трёшка рядом со школой', 'Готовый дом, ипотека', 'Однушка для инвестиций', 'Рассрочка, платёж до 200 тыс в месяц'];
+  { const el = $('#hmSub'); if (el) { const n = ORDER.length, mn = Math.min(...FL.map(f => f.p)); el.innerHTML = `<span>${n} ${plural(n, 'жилой комплекс', 'жилых комплекса', 'жилых комплексов')} · </span><span>${kv(FL.length)} от ${mln(mn)} ₸</span>`; } }
+  const EXS = ['Двушка до 30 млн', 'Трёшка рядом со школой', 'Готовый дом, ипотека'];
   $('#hEx').innerHTML = EXS.map(t => `<button type="button">${t}</button>`).join('');
   const hm = { m: 'ai' };
   function hMode(m) {
@@ -139,7 +141,7 @@
       <div class="pb"><h3>${{ life: 'Alatau Life', plaza: 'Alatau Plaza Residence', eco: 'Alatau Eco Park' }[b]}</h3><div class="addr">${icon('pin')}${z.addr}</div>
         <div class="sum num"><span>от ${area(s.amin)} м²</span><em>${kv(s.n)}</em><b>от ${mln(s.min)} ₸</b></div>
         <div class="tbl"><table class="num"><caption>${kv(s.n)} <span>в продаже</span></caption>${s.rows.map(([r, x]) => `<tr><td>${r === 0 ? 'Студия' : r >= 4 ? '4+ комн.' : r + '-комн.'}<small>от ${area(x.a)} м²</small></td><td><b>от ${mln(x.p)} ₸</b></td></tr>`).join('')}</table>
-        <div class="pbtn"><a class="kb ic" href="project.html#${b}" aria-label="О комплексе" title="О комплексе">${icon('building')}</a><a class="kb pri" href="flats.html#zk-${b}">${icon('arrow')}Квартиры</a></div></div>
+        <div class="pbtn"><a class="kb ic" href="project.html#${b}" aria-label="О комплексе" title="О комплексе">${icon('building')}</a><a class="kb" href="flats.html#zk-${b}">${icon('arrow')}Квартиры</a></div></div>
       </div></div>`;
   }).join('') + (ORDER.length < 4 ? (() => { const build = ORDER.filter(b => K.status(b).k !== 'done').length, done = ORDER.length - build;
     return `<a class="pc pc-all" href="zhk.html"><svg class="pa-roof" viewBox="0 0 493 147" aria-hidden="true"><path d="M246.5 0L0 117V146.4L246.5 29.3L493 146.4V117Z"/></svg>
@@ -158,15 +160,15 @@
   // сроки акций — пример; реальные даты задаёт отдел продаж
   const nowD = new Date(), eom = new Date(nowD.getFullYear(), nowD.getMonth() + 1, 0, 23, 59, 59), eow = new Date(nowD.getFullYear(), nowD.getMonth(), nowD.getDate() + (7 - nowD.getDay()) % 7, 23, 59, 59), eonm = new Date(nowD.getFullYear(), nowD.getMonth() + 2, 0, 23, 59, 59);
   const PROMOS = [
-    { h: 'flats.html#zk-plaza', img: 'img/g/promo-inst.webp', pc: '#5B21B6', ic: 'wallet', lab: 'Alatau Plaza Residence', t: 'Рассрочка 0% без банка', p: 'Первый взнос от 30%, остаток равными платежами до 24 месяцев. Без справок о доходе и переплаты.', go: 'Смотреть квартиры', until: eom },
-    { h: 'flats.html#zk-eco', img: 'img/g/promo-last.webp', pc: '#B4380B', ic: 'bell', lab: 'Alatau Eco Park', t: (fEco.length === 1 ? 'Последняя квартира в готовом доме' : `Последние ${kv(fEco.length)} в готовом доме`), p: `Дом построен, можно заезжать сразу после сделки. Ипотека 7-20-25, от ${mln(ST.eco.min)} ₸.`, go: 'Успеть', left: fEco.length },
-    { h: `flat.html#flat-${cheapLife.id}`, img: 'img/g/promo-hot.webp', pc: '#A3135A', ic: 'tag', lab: 'Спеццена недели', t: `<span class="old num">${mln(cheapLife.p * 1.03)}</span>${mln(cheapLife.p)} ₸`, p: 'Однокомнатная квартира в Alatau Life по специальной цене. Только до воскресенья.', go: 'Открыть квартиру', until: eow },
-    { h: 'mortgage.html#full', img: 'img/g/promo-full.webp', pc: '#9A4A00', ic: 'percent', lab: 'Все проекты', t: 'Скидка до 10% за оплату', p: 'Чем больше вносите сразу, тем ниже цена: 3% при 25%, 5% при 50% и 10% при полной оплате.', go: 'Узнать условия', until: eom },
-    { h: 'mortgage.html#7', img: 'img/g/promo-7.webp', pc: '#1E3FA8', ic: 'bank', lab: 'Госпрограмма', t: 'Ипотека 7-20-25', p: 'Ставка 7% на весь срок, взнос от 20%, до 25 лет. Поможем собрать документы за один визит.', go: 'Как работает' },
-    { h: 'extra.html#parking', img: 'img/g/promo-park.webp', pc: '#0B6B66', ic: 'car', lab: 'Вместе с квартирой', t: 'Машиноместо к квартире', p: `Добавьте место в крытом паркинге к брони: один договор и одна сумма. ${EX['Parking place'].n} мест, от ${mln(EX['Parking place'].min)} ₸.`, go: 'Выбрать место', until: eonm }];
+    { h: 'flats.html#zk-plaza', pc: '#5B21B6', ic: 'wallet', lab: 'Alatau Plaza Residence', t: 'Рассрочка 0% без банка', p: 'Первый взнос от 30%, остаток равными платежами до 24 месяцев. Без справок о доходе и переплаты.', go: 'Смотреть квартиры', until: eom },
+    { h: 'flats.html#zk-eco', pc: '#B4380B', ic: 'bell', lab: 'Alatau Eco Park', t: (fEco.length === 1 ? 'Последняя квартира в готовом доме' : `Последние ${kv(fEco.length)} в готовом доме`), p: `Дом построен, можно заезжать сразу после сделки. Ипотека 7-20-25, от ${mln(ST.eco.min)} ₸.`, go: 'Успеть', left: fEco.length },
+    { h: `flat.html#flat-${cheapLife.id}`, pc: '#A3135A', ic: 'tag', lab: 'Спеццена недели', t: `<span class="old num">${mln(cheapLife.p * 1.03)}</span>${mln(cheapLife.p)} ₸`, p: 'Однокомнатная квартира в Alatau Life по специальной цене. Только до воскресенья.', go: 'Открыть квартиру', until: eow },
+    { h: 'mortgage.html#full', pc: '#9A4A00', ic: 'percent', lab: 'Все проекты', t: 'Скидка до 10% за оплату', p: 'Чем больше вносите сразу, тем ниже цена: 3% при 25%, 5% при 50% и 10% при полной оплате.', go: 'Узнать условия', until: eom },
+    { h: 'mortgage.html#7', pc: '#1E3FA8', ic: 'bank', lab: 'Госпрограмма', t: 'Ипотека 7-20-25', p: 'Ставка 7% на весь срок, взнос от 20%, до 25 лет. Поможем собрать документы за один визит.', go: 'Как работает' },
+    { h: 'extra.html#parking', pc: '#0B6B66', ic: 'car', lab: 'Вместе с квартирой', t: 'Машиноместо к квартире', p: `Добавьте место в крытом паркинге к брони: один договор и одна сумма. ${EX['Parking place'].n} мест, от ${mln(EX['Parking place'].min)} ₸.`, go: 'Выбрать место', until: eonm }];
   const PR_ROW = 3, rows = [];
   for (let k = 0; k < PROMOS.length; k += PR_ROW) rows.push(PROMOS.slice(k, k + PR_ROW));
-  $('#promoG').innerHTML = rows.map(r => `<div class="prow">${r.map(x => `<a class="pr pr2" href="${x.h}" style="--pc:${x.pc}"><img src="${x.img}" alt="" loading="lazy"><span class="lab">${icon(x.ic)}${x.lab}</span>${x.until ? `<span class="pr-tm num" data-until="${+x.until}" data-tip="Срок акции указан для примера">${icon('clock')}<b></b></span>` : x.left ? `<span class="pr-tm hot num">${icon('bell')}<b>Осталось ${x.left}</b></span>` : ''}<h3>${x.t}</h3><p>${x.p}</p><span class="go">${x.go}${icon('arrow')}</span></a>`).join('')}</div>`).join('');
+  $('#promoG').innerHTML = rows.map(r => `<div class="prow">${r.map(x => `<a class="pr pr2" href="${x.h}" style="--pc:${x.pc}"><span class="lab">${icon(x.ic)}${x.lab}</span>${x.until ? `<span class="pr-tm num" data-until="${+x.until}" data-tip="Срок акции указан для примера">${icon('clock')}<b></b></span>` : x.left ? `<span class="pr-tm hot num">${icon('bell')}<b>Осталось ${x.left}</b></span>` : ''}<h3>${x.t}</h3><p>${x.p}</p><span class="go">${x.go}${icon('arrow')}</span></a>`).join('')}</div>`).join('');
   // акции: карточка расширяется по очереди, при наведении — та, что под курсором
   // обратный отсчёт до конца акции
   const tmTick = () => $$('#promoG [data-until]').forEach(el => { const d = Math.max(0, +el.dataset.until - Date.now()), D = Math.floor(d / 864e5), h = Math.floor(d / 36e5) % 24, m = Math.floor(d / 6e4) % 60, sec = Math.floor(d / 1e3) % 60, p2 = n => String(n).padStart(2, '0'); $('b', el).textContent = `${D ? D + ' д ' : ''}${p2(h)}:${p2(m)}:${p2(sec)}`; });
@@ -187,12 +189,12 @@
 
   /* ипотека: программы. Ставки, кроме 7-20-25, — примеры для расчёта */
   const PR = [Math.floor(Math.min(...FL.map(f => f.p)) / 1e6), Math.ceil(Math.max(...FL.map(f => f.p)) / 1e6)];
-  const cs = { k: '7', p: 30, d: 20, y: 25, rate: 7 };
+  const cs = { k: 'market', p: 30, d: 20, y: 20, rate: 18 }; // по умолчанию — программа, которая есть во всех ЖК (27.11.2026)
   const { PROGS, PIMG, PMORE, pFacts } = K;
   $('#progs').innerHTML = PROGS.map(g => `<div class="pg" role="button" tabindex="0" data-k="${g.k}" aria-pressed="${g.k === cs.k}"><div class="pg-h"><img class="pi" src="img/g/${PIMG[g.k]}.webp" alt="" loading="lazy"><div><b>${g.t}</b><span>${g.s}</span></div><em class="num">${g.rl || (g.ask || g.full ? '—' : g.rate + '%')}${g.ex && !g.ask ? '<small>пример</small>' : ''}</em></div>
     <div class="pg-b"><div><div class="pg-f">${pFacts(g).map(([i, t]) => `<span>${icon(i)}${t}</span>`).join('')}</div>
       <div class="pg-go"><span>Есть в ЖК</span><div>${g.zkq ? '<span>уточнит менеджер</span>' : ''}${(g.zkq ? [] : g.zk).map(b => `<a class="kb sm" href="project.html#${b}">${icon('building')}${SHORT[b]}</a>`).join('')}</div>
-      <a class="kb pri sm pg-page" href="mortgage.html#${g.k}">${icon('doc')}Как работает программа${icon('arrow')}</a></div></div></div></div>`).join('');
+      <a class="kb sm pg-page" href="mortgage.html#${g.k}">${icon('doc')}Как работает программа${icon('arrow')}</a></div></div></div></div>`).join('');
   $('#calc2').innerHTML = `<div><h3 id="cT"></h3></div><p class="sub" id="cSub"></p>
     <div class="zks" id="cZ"></div>
     <div class="ks">
@@ -256,7 +258,7 @@
   $('#progs').onkeydown = e => { const b = e.target.closest('.pg'); if (b && e.target === b && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); setProg(b.dataset.k); } };
   [['#rcP', 'p'], ['#rcD', 'd'], ['#rcY', 'y'], ['#rcR', 'rate']].forEach(([s, k]) => $(s).oninput = e => { cs[k] = +e.target.value; cRecalc(); });
   $('#cGo').onclick = e => { e.preventDefault(); e.stopPropagation(); ss('bq-q', JSON.stringify({ zk: 'all', rooms: [], pm: 'price', max: cs.p })); go('flats.html#q'); };
-  setProg('7');
+  setProg('market');
 
   /* почему мы */
   const WHY = [['ceil', 'Потолки 3 метра', 'Больше воздуха и света', /потол/i], ['face', 'Face ID', 'Вход без ключей и карточек', /face/i], ['lock', 'Смарт-замки', 'Открывайте дверь с телефона', /замк/i], ['tree', 'Закрытый двор', 'Без машин, безопасно для детей', /двор/i], ['car', 'Крытый паркинг', 'Тепло зимой, место за вами', /паркинг/i], ['mute', 'Шумоизоляция', 'Тишина от соседей и улицы', /шум/i], ['cam', 'Видеонаблюдение', 'Двор и подъезды под контролем', /видео/i], ['film', 'Кинорум и детская', 'Общие пространства для жильцов', /кино|детск/i]];

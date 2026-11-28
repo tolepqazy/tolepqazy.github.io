@@ -47,8 +47,12 @@
     }
     return best;
   }
-  const K_PAY = 0.0056542; // взнос 20%, 25 лет, 7% — пример калькулятора baqytgroup.kz
-  const monthly = (p) => Math.round(p * K_PAY);
+  /* платёж в месяц — по программе, которая есть в ЖК этой квартиры (27.11.2026): 7-20-25 только в Eco Park (7%, 25 лет),
+     в остальных — ипотека банка (18% пример, 20 лет). Взнос 20%. Те же значения, что открывает калькулятор на странице квартиры (kit.js PROGS). */
+  const payK = (rate, years) => { const r = rate / 12, n = years * 12; return .8 * r / (1 - (1 + r) ** -n); };
+  const K_ECO = payK(.07, 25), K_BANK = payK(.18, 20);
+  const monthly = (p, b) => Math.round(p * (b === 'eco' ? K_ECO : K_BANK) / 100) * 100;
+  const payNote = b => b === 'eco' ? 'Ипотека 7-20-25: ставка 7%, взнос 20%, 25 лет' : 'Ипотека банка: ставка 18% — пример, взнос 20%, 20 лет';
   const fmt = (v) => Math.round(v).toLocaleString('ru-RU').replace(/ /g, ' ');
   const mln = (v) => (v / 1e6).toFixed(1).replace(/\.0$/, '').replace('.', ',') + ' млн';
   const area = (a) => String(a).replace('.', ',');
@@ -67,7 +71,7 @@
       else reasons.push([false, roomsWord(f.r)]);
     }
     // платёж
-    const m = monthly(f.p);
+    const m = monthly(f.p, f.b);
     if (m <= q.budget) { s += 35; reasons.push([true, 'платёж ' + fmt(m) + ' ₸ в месяц']); }
     else { const k = Math.max(0, 1 - (m - q.budget) / (q.budget * 0.6)); s += 35 * k; reasons.push([false, 'платёж ' + fmt(m) + ' ₸, выше на ' + fmt(m - q.budget)]); }
     // этаж
@@ -172,5 +176,5 @@
     url: href => PRETTY ? pretty(href, window.BQI ? window.BQI.lang : HERE.lang) : href
   };
 
-  window.BQX = { ZK, PLACES, minutesTo, monthly, fmt, mln, area, roomsWord, plural, score, parse, K_PAY, R };
+  window.BQX = { ZK, PLACES, minutesTo, monthly, fmt, mln, area, roomsWord, plural, score, parse, payNote, R };
 })();

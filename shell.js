@@ -1,7 +1,7 @@
 /* Общая оболочка всех страниц: демо-панель, шапка с меню, подвал с силуэтом домов, панель на телефоне,
    избранное, сравнение, контекстное меню, суперподсказка шахматки, переходы между страницами. */
 (() => {
-  const { ZK, monthly, fmt, mln, area, roomsWord, plural, R } = window.BQX;
+  const { ZK, monthly, payNote, fmt, mln, area, roomsWord, plural, R } = window.BQX;
   /* готовая страница (dist/): в body лежит уже отрисованная копия для поисковиков, а исходная разметка — в <template id="bq-tpl">.
      Убираем копию и запускаем страницу как обычно, иначе шапка, подвал и блоки задвоятся. */
   const TPL = document.getElementById('bq-tpl');
@@ -37,8 +37,8 @@
     flats: [1, 2, 3, 4].map(r => { const s = roomStat(r), f = FL.filter(x => Math.min(x.r, 4) === r).sort((a, b) => a.p - b.p)[0]; return { i: 'door', t: r === 4 ? '4+ комнаты' : r + '-комнатные', s: `${s.n} в продаже · от ${area(f.a)} м²`, e: `от ${mln(s.min)} ₸`, img: `img/g/room-${r}.webp`, href: `flats.html#r-${r}` }; })
       .concat([{ i: 'quiz', t: 'Подбор за 6 вопросов', s: 'Квиз сам настроит фильтр', img: 'img/g/quiz-3d.webp', href: 'flats.html#quiz' }, { i: 'grid', t: 'Шахматка', s: 'Все квартиры по этажам', img: 'img/g/chess.webp', href: 'flats.html#chess' }]),
     commerce: [{ i: 'car', t: 'Паркинг', s: `${EX['Parking place'].n} мест · ${area(EX['Parking place'].amin)}–${area(EX['Parking place'].amax)} м²`, e: `от ${mln(EX['Parking place'].min)} ₸`, img: 'img/g/parking.webp', href: 'extra.html#parking' }, { i: 'box', t: 'Кладовые', s: `${EX.Storeroom.n} шт. · ${area(EX.Storeroom.amin)}–${area(EX.Storeroom.amax)} м²`, e: `от ${fmt(EX.Storeroom.min)} ₸`, img: 'img/g/store.webp', href: 'extra.html#store' }, { i: 'shop', t: 'Коммерческие помещения', s: 'Первые этажи · по запросу', img: 'img/g/commerce.webp', href: 'extra.html#commerce' }],
-    buy: [{ i: 'bank', t: 'Ипотека', s: 'Программы и расчёт платежа', img: 'img/g/mortgage-family.webp', href: 'mortgage.html' }, { i: 'percent', t: 'Ипотека 7-20-25', s: 'Государственная программа', img: 'img/g/prog-7-20-25.webp', href: 'mortgage.html#7' }, { i: 'wallet', t: 'Рассрочка', s: 'От застройщика, в Alatau Plaza Residence', img: 'img/g/prog-installment.webp', href: 'mortgage.html#inst' }, { i: 'tag', t: 'Скидки за оплату', s: 'Размер скидки назовёт менеджер', img: 'img/g/prog-full.webp', href: 'mortgage.html#full' }, { i: 'gift', t: 'Предложения', s: 'Условия по каждому ЖК', img: 'img/g/deals.webp', href: './#promo' }],
-    about: [{ i: 'star', t: 'Почему Baqyt', s: 'Что есть в наших домах', img: 'img/g/why.webp', href: 'about.html#why' }, { i: 'hammer', t: 'Стройка и документы', s: 'Фото каждый месяц', img: 'img/g/build.webp', href: 'about.html#build' }, { i: 'users', t: 'Кабинет и семья', s: 'Выбирайте квартиру вместе', img: 'img/g/family-cabinet.webp', href: 'about.html#family' }, { i: 'briefcase', t: 'Карьера', s: 'Работа в Baqyt Group', img: 'img/g/office.webp', href: 'about.html#career' }, { i: 'info', t: 'Частые вопросы', s: 'Ипотека, сроки, документы', img: 'img/g/lead.webp', href: 'about.html#faq' }, { i: 'pin', t: 'Контакты', s: 'Отдел продаж, шоурум, часы работы', img: 'img/g/office.webp', href: 'contacts.html' }, { i: 'pin', t: 'Контакты и офис продаж', s: 'пр-т Мәңгілік Ел, 54, НП 9', img: 'img/g/office.webp', href: 'about.html#contacts' }]
+    buy: [{ i: 'bank', t: 'Ипотека', s: 'Программы и расчёт платежа', img: 'img/g/mortgage-family.webp', href: 'mortgage.html' }, { i: 'percent', t: 'Ипотека 7-20-25', s: 'Государственная программа', img: 'img/g/prog-7-20-25.webp', href: 'mortgage.html#7' }, { i: 'wallet', t: 'Рассрочка', s: 'От застройщика, в Alatau Plaza Residence', img: 'img/g/prog-installment.webp', href: 'mortgage.html#inst' }, { i: 'tag', t: 'Скидки за оплату', s: 'Размер скидки назовёт менеджер', img: 'img/g/prog-full.webp', href: 'mortgage.html#full' }],
+    about: [{ i: 'star', t: 'Почему Baqyt', s: 'Что есть в наших домах', img: 'img/g/why.webp', href: 'about.html#why' }, { i: 'briefcase', t: 'Карьера', s: 'Работа в Baqyt Group', img: 'img/g/office.webp', href: 'about.html#career' }, { i: 'info', t: 'Частые вопросы', s: 'Ипотека, сроки, документы', img: 'img/g/lead.webp', href: 'about.html#faq' }, { i: 'pin', t: 'Контакты', s: 'Отдел продаж, шоурум, часы работы', img: 'img/g/office.webp', href: 'contacts.html' }, { i: 'pin', t: 'Контакты и офис продаж', s: 'пр-т Мәңгілік Ел, 54, НП 9', img: 'img/g/office.webp', href: 'about.html#contacts' }]
   };
   const NAVP = { zhk: 'projects', project: 'projects', flats: 'flats', flat: 'flats', extra: 'commerce', about: 'about', contacts: 'about', mortgage: 'buy' }[PAGE];
   const aOf = (x, i) => `<a href="${x.href}" data-i="${i}" class="${i ? '' : 'on'}"><span class="mi">${icon(x.i)}</span><div><b>${x.t}</b><span>${x.s}</span></div><em class="num">${x.e || ''}</em></a>`;
@@ -59,13 +59,11 @@
     <nav class="mainnav" id="mainnav" aria-label="Разделы">
       <span class="navmark rm" id="navmark" aria-hidden="true"></span>
       ${[['projects', 'Проекты'], ['flats', 'Квартиры'], ['commerce', 'Помещения'], ['buy', 'Покупка'], ['about', 'О компании']].map(([k, t]) => `<button data-menu="${k}" aria-expanded="false" ${k === NAVP ? 'class="cur"' : ''}>${t} <i class="caret rm"></i></button>`).join('')}
-      <a href="./#promo" class="hot" data-icon="gift">Предложения</a>
     </nav>
     <div class="hdr-r">
       <a class="phone num" href="tel:+77008000016" data-icon="phone" aria-label="Позвонить в отдел продаж" data-tip="Отдел продаж · Пн–Сб 10–20"><span>+7 700 800 00 16</span><em class="ph-n" aria-hidden="true">+7 700 800 00 16</em></a>
       <div class="langw" data-noi18n><button class="lang" id="lang" aria-haspopup="true" aria-expanded="false" aria-label="Язык сайта">${icon('globe')}<b>РУС</b><i class="caret rm"></i></button><div class="langm" id="langM" hidden></div></div>
       <button class="ico" id="favBtn" aria-label="Избранное" data-icon="heart"><span class="badge" id="favN">0</span></button>
-      <button class="kb cab" data-cab data-icon="user"><span>Кабинет</span></button>
       <button class="ico burger" id="burger" aria-label="Меню" data-icon="menu"></button>
     </div>
   </div>
@@ -82,7 +80,7 @@
     <div class="fgrid">
       <div><h4><i class="rm"></i>Проекты</h4><ul>${ORDER.map(b => `<li><a href="project.html#${b}">${ZK[b].name}</a></li>`).join('')}<li><a href="zhk.html#map">Все ЖК на карте</a></li></ul></div>
       <div><h4><i class="rm"></i>Квартиры</h4><ul>${[1, 2, 3, 4].map(r => `<li><a href="flats.html#r-${r}">${r === 4 ? '4+ комнаты' : r + '-комнатные'}</a></li>`).join('')}<li><a href="flats.html#quiz">Подбор по квизу</a></li></ul></div>
-      <div><h4><i class="rm"></i>Покупка</h4><ul><li><a href="mortgage.html">Ипотека</a></li><li><a href="mortgage.html#7">Программа 7-20-25</a></li><li><a href="mortgage.html#inst">Рассрочка</a></li><li><a href="./#mortgage">Калькулятор</a></li><li><a href="./#promo">Предложения</a></li></ul></div>
+      <div><h4><i class="rm"></i>Покупка</h4><ul><li><a href="mortgage.html">Ипотека</a></li><li><a href="mortgage.html#7">Программа 7-20-25</a></li><li><a href="mortgage.html#inst">Рассрочка</a></li><li><a href="./#mortgage">Калькулятор</a></li><li><a href="flats.html#deal">Выгодные квартиры</a></li></ul></div>
       <div><h4><i class="rm"></i>Помещения</h4><ul><li><a href="extra.html#parking">Паркинг</a></li><li><a href="extra.html#store">Кладовые</a></li><li><a href="extra.html#commerce">Коммерческие помещения</a></li></ul></div>
       <div><h4><i class="rm"></i>Контакты</h4><ul><li><a href="https://2gis.kz/astana/search/Мәңгілік%20Ел%2054" target="_blank" rel="noopener">пр-т Мәңгілік Ел, 54, НП&nbsp;9</a></li><li><a href="mailto:info@baqytgroup.kz">info@baqytgroup.kz</a></li><li><a href="contacts.html">Все контакты</a></li><li><a href="about.html">О компании</a></li></ul>
         <div class="f-soc"><a href="https://www.instagram.com/baqyt_group/" target="_blank" rel="noopener" aria-label="Instagram" data-icon="insta"></a><a href="https://www.tiktok.com/@baqyt_group" target="_blank" rel="noopener" aria-label="TikTok" data-icon="tiktok"></a><a href="https://www.youtube.com/results?search_query=Baqyt+Group" target="_blank" rel="noopener" aria-label="YouTube" data-icon="yt"></a><a href="https://wa.me/77008000016" target="_blank" rel="noopener" aria-label="WhatsApp" data-icon="wa"></a></div></div>
@@ -96,7 +94,7 @@
   <a href="./" ${PAGE === 'home' ? 'aria-current="true"' : ''} data-icon="home">Главная</a>
   <a href="flats.html" ${PAGE === 'flats' || PAGE === 'flat' ? 'aria-current="true"' : ''} data-icon="search">Квартиры</a>
   <button data-ai data-icon="spark">ИИ-подбор</button>
-  <button data-cab data-icon="user">Кабинет<span class="badge" id="favN2">0</span></button>
+  <button data-favs data-icon="heart">Избранное<span class="badge" id="favN2">0</span></button>
 </nav>
 <div class="msheet" id="msheet" aria-label="Меню">
   <div class="mh"><a class="logo" href="./"><img src="img/logo.svg" alt="Baqyt Group" style="height:32px;width:auto"></a><button class="ico" id="mClose" aria-label="Закрыть" data-icon="close"></button></div>
@@ -210,7 +208,7 @@
     toast(fav.has(id) ? 'Добавили в избранное' : 'Убрали из избранного');
   }
   syncFav();
-  const showFav = () => { if (!fav.size) { toast('Нажмите ♡ на квартире, чтобы сохранить её'); return; } K.cabinet([...fav]); };
+  const showFav = () => { if (!fav.size) { toast('Нажмите ♡ на квартире, чтобы сохранить её'); return; } K.favs([...fav], { open: id => openFlat(id), toggle: favToggle, ids: () => [...fav] }); };
   $('#favBtn').onclick = showFav;
 
   const openFlat = id => go(`flat.html#flat-${id}`);
@@ -228,8 +226,10 @@
       return;
     }
     if (t.closest('[data-call]')) { e.preventDefault(); closeMenus(); K.form('call'); return; }
+    { const lf = t.closest('[data-lead-form]'); if (lf) { e.preventDefault(); closeMenus(); K.form('lead', null, lf.dataset.leadForm || ''); return; } } // заявка — главный призыв (показы редкие, 27.11.2026)
     if (t.closest('[data-visit]')) { e.preventDefault(); closeMenus(); const vs = document.getElementById('visit'); if (vs) scrollToEl(vs); else K.form('visit'); return; }
     if (t.closest('[data-cab]')) { e.preventDefault(); closeMenus(); K.cabinet([...fav]); return; }
+    if (t.closest('[data-favs]')) { e.preventDefault(); closeMenus(); showFav(); return; }
     if (t.closest('[data-ai]')) { e.preventDefault(); closeMenus(); K.chat(api); return; }
     if (t.closest('[data-favs]')) { showFav(); return; }
     const a = t.closest('a[href]'); if (!a || a.target) return;
@@ -250,14 +250,15 @@
 
   /* карточка квартиры */
   function card(f, i, sc) {
-    const m = monthly(f.p), d = K.delta(f), same = K.samePlan(f), stt = K.status(f.b);
+    const m = monthly(f.p, f.b), d = K.delta(f), same = K.samePlan(f), stt = K.status(f.b);
     return `<article class="card" data-id="${f.id}" style="--i:${i}" tabindex="0" aria-label="${roomsWord(f.r)}, ${area(f.a)} м², ${SHORT[f.b]}">
       <div class="ch"><b>${SHORT[f.b]}</b><div class="pays">${META[f.b].pay.map(p => `<span class="tg ${p === 'inst' ? 'tg-cls' : 'tg-status'}">${K.PAYN[p]}</span>`).join('')}</div></div>
       <div class="pic">${sc ? `<span class="match">${icon('spark')}${sc}%</span>` : ''}${d <= -8 ? `<span class="deal">${icon('tag')}−${-d}% к средней</span>` : ''}<img src="${f.pl}" alt="Планировка ${roomsWord(f.r)}" loading="lazy"><button class="pfav" type="button" data-fav="${f.id}" aria-pressed="${fav.has(f.id)}" aria-label="В избранное">${icon('heart')}</button></div>
       <div class="body">
         <div class="price num"><a href="${R.url('flat.html#flat-' + f.id)}" style="color:inherit;text-decoration:none">${fmt(f.p)} ₸</a>${d <= -8 ? `<span class="dealm">−${-d}%</span>` : ''}</div>
-        <div class="m2 num">${fmt(f.m2)} ₸/м² · ${fmt(m)} ₸ в месяц</div>
-        <div class="spec">${roomsWord(f.r)}<i></i>${area(f.a)} м²<i></i>${f.fl}${K.floorsOf(f) ? ' из ' + K.floorsOf(f) : ''} этаж</div><div class="subm num">${SHORT[f.b]} · ${fmt(m)} ₸ в месяц</div>
+        <div class="czk">${SHORT[f.b]}</div>
+        <div class="m2 num" title="${payNote(f.b)}">${fmt(f.m2)} ₸/м² · ${fmt(m)} ₸ в месяц</div>
+        <div class="spec">${roomsWord(f.r)}<i></i>${area(f.a)} м²<i></i>${f.fl}${K.floorsOf(f) ? ' из ' + K.floorsOf(f) : ''} этаж</div><div class="subm num" title="${payNote(f.b)}">Ипотека · ${fmt(m)} ₸ в месяц</div>
         <div class="rows">
           <div>${icon(stt.k === 'done' ? 'key' : 'clock')}${stt.k === 'done' ? 'Готовность' : 'Срок сдачи'}<b>${stt.t.replace('Сдача: ', '')}</b></div>
           <div>${icon('tag')}Цена за м²<b class="${d <= -1 ? 'good' : ''}">${d <= -1 ? `на ${-d}% ниже средней` : d >= 1 ? `на ${d}% выше средней` : 'средняя по ЖК'}</b></div>
@@ -314,7 +315,7 @@
         <div class="stip-h"><b>${roomsWord(f.r)}, ${area(f.a)} м²</b><span>${SHORT[f.b]} · подъезд ${f.e} · ${f.fl}${fls ? ' из ' + fls : ''} этаж</span></div>
         <div class="stip-p num"><b>${fmt(f.p)} ₸</b><span>${fmt(f.m2)} ₸/м²</span></div>
         <div class="stip-rows num">
-          <div>${icon('bank')}<span>Ипотека</span><b>${fmt(monthly(f.p))} ₸/мес</b></div>
+          <div>${icon('bank')}<span>Ипотека</span><b>${fmt(monthly(f.p, f.b))} ₸/мес</b></div>
           <div>${icon('tag')}<span>К средней цене</span><b class="${d <= -1 ? 'good' : ''}">${d <= -1 ? `−${-d}%` : d >= 1 ? `+${d}%` : 'средняя'}</b></div>
           <div>${icon(stt.k === 'done' ? 'key' : 'clock')}<span>${stt.k === 'done' ? 'Готовность' : 'Срок'}</span><b>${stt.t.replace('Сдача: ', '')}</b></div>
         </div>
@@ -374,7 +375,7 @@
         <ol class="l-steps"><li><b>Оставляете номер</b></li><li><b>Менеджер пишет в WhatsApp</b></li><li><b>Смотрите вживую или онлайн</b></li></ol></div>
       <figure class="l-pic" data-roof="46" data-roof-m="30" data-roof-r="14" data-roof-rm="10"><img src="${el.dataset.img || 'img/g/lead2.webp'}" alt="" loading="lazy"><figcaption><i class="dot"></i><span><b>Менеджеры на связи</b>Пн–Сб 10–20, Вс 11–16</span></figcaption></figure>
       <form class="lform l-card" novalidate><h3>${q ? 'Что подобрать?' : 'Оставьте контакт'}</h3>
-        ${q ? chips('Комнат', ['Студия', '1', '2', '3', '4+'], 'r') + chips('Бюджет, млн ₸', ['до 25', '25–40', '40–60', '60+'], 'b') : ''}
+        ${q ? chips('Комнат', ['1', '2', '3', '4+'], 'r') + chips('Бюджет, млн ₸', ['до 25', '25–40', '40–60', '60+'], 'b') : ''}
         <div class="lq"><span>Как связаться</span><div class="l-seg">${[['wa', 'WhatsApp'], ['call', 'Звонок'], ['tg', 'Telegram']].map(([k, t], i) => `<button type="button" data-c="${t}" aria-pressed="${!i}">${icon(k === 'call' ? 'phone' : k)}${t}</button>`).join('')}</div></div>
         <div class="l-in"><input class="ln" placeholder="Имя" autocomplete="name" aria-label="Имя"><input class="lp" placeholder="+7 7__ ___ __ __" inputmode="tel" autocomplete="tel" aria-label="Телефон"></div>
         <button class="kb pri" type="submit">${icon('send')}${el.dataset.btn || 'Получить подборку'}</button>

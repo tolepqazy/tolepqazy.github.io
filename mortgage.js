@@ -42,15 +42,17 @@
         <span class="eyebrow"><i class="rm"></i>${g.s}</span><h2>${g.t}</h2>
         <div class="pg-f mp-f">${pFacts(g).map(([ic, t]) => `<span>${icon(ic)}${t}</span>`).join('')}</div>
         <div class="mp-txt">${PMORE[g.k].map(t => `<p>${t}</p>`).join('')}</div>${g.tbl ? rates(g) : ''}
+        <details class="mp-more"><summary>Кому подходит, документы и шаги<i class="rm"></i></summary>
         <div class="mp-cols">
           <div><h3>${icon('user')}Кому подходит</h3><ul class="mp-who">${f.who.map(t => `<li>${icon('check')}${t}</li>`).join('')}</ul></div>
           <div><h3>${icon('doc')}Что понадобится</h3><ul class="mp-who">${f.docs.map(t => `<li>${icon('file')}${t}</li>`).join('')}</ul></div>
         </div>
         <h3 class="mp-h3">${icon('route')}Как оформить</h3>
         <ol class="mp-steps">${f.steps.map(t => `<li><span>${t}</span></li>`).join('')}</ol>
+        </details>
         <h3 class="mp-h3">${icon('building')}Есть в ЖК</h3>${g.zkq ? `<p class="mp-q">В каких наших ЖК доступна программа, уточнит менеджер.</p>` : ''}
         <div class="mp-zk"${g.zkq ? ' hidden' : ''}>${g.zk.map(b => `<a href="project.html#${b}"><img src="${PHOTO[b]}" alt=""><span><b>${SHORT[b]}</b><small class="num">${kv(ST[b].n)} · от ${mln(ST[b].min)} ₸</small></span>${icon('arrow')}</a>`).join('')}</div>
-        <div class="mp-cta">${g.bank ? `<button class="kb pri" data-call>${icon('phone')}Рассчитать с менеджером</button>` : `<a class="kb pri" href="./#prog-${g.k}">${icon('calc')}Рассчитать платёж</a>`}<a class="kb" href="flats.html">${icon('search')}Подобрать квартиру</a>${g.bank ? '' : `<button class="kb" data-call>${icon('phone')}Консультация</button>`}</div>
+        <div class="mp-cta">${g.bank ? `<button class="kb pri" data-call>${icon('phone')}Рассчитать с менеджером</button>` : `<a class="kb pri" href="./#prog-${g.k}">${icon('calc')}Рассчитать платёж</a>`}<a class="kb" href="flats.html">${icon('search')}Подобрать квартиру</a></div>
       </div>
     </section>`;
   }).join('');
